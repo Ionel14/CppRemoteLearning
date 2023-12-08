@@ -38,3 +38,5 @@ cmake_install.cmake
 homework
 Makefile
 
+# VSCode
+.vscode/
