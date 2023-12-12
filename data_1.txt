@@ -1,0 +1,7 @@
+Room: bedroom02
+	blinds	on
+Room: bedroom01
+	lights	off
+Room: kitchen
+	humidity	30
+	temperature	20
