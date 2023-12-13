@@ -1,5 +1,6 @@
 #include "device.h"
 
+namespace smartHome{
 // Constructor
 Device::Device(const std::string& type, const std::string& deviceId, bool status, const std::vector<Sensor> sensors)
     : type(type), deviceId(deviceId), status(status), sensors(sensors) {}
@@ -22,4 +23,5 @@ bool Device::getStatus() const {
 // Getter for device's list of sensors
 const std::vector<Sensor> Device::getSensors() const {
     return sensors;
+}
 }

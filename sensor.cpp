@@ -1,5 +1,6 @@
 #include "sensor.h"
 
+namespace smartHome{
 // Constructor
 Sensor::Sensor(const std::string& type, const std::string& sensorId, double value, bool isFunctional)
     : type(type), sensorId(sensorId), value(value), isFunctional(isFunctional) {}
@@ -22,4 +23,5 @@ double Sensor::getValue() const {
 // Getter for sensor's state of functionality
 bool Sensor::getIsFunctional() const {
     return isFunctional;
+}
 }

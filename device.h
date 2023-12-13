@@ -5,6 +5,7 @@
 #include <vector>
 #include "sensor.h"
 
+namespace smartHome{
 class Device {
 public:
     Device(const std::string& type, const std::string& deviceId, bool status, const std::vector<Sensor> sensors);
@@ -20,5 +21,5 @@ private:
     bool status;
     std::vector<Sensor> sensors;
 };
-
+}
 #endif // DEVICE_H

@@ -1,5 +1,6 @@
 #include "room.h"
 
+namespace smartHome{
 // Constructor
 Room::Room(const std::string& name, const std::string& roomId, const std::vector<Device> devices)
     : name(name), roomId(roomId), devices(devices) {}
@@ -17,4 +18,5 @@ const std::string Room::getId() const {
 // Getter for room's list of devices
 const std::vector<Device> Room::getDevices() const {
     return devices;
+}
 }

@@ -4,6 +4,7 @@
 #include <vector>
 #include "room.h"
 
+namespace smartHome{
 class SmartHome {
 public:
     SmartHome(const std::vector<Room> rooms);
@@ -17,5 +18,5 @@ private:
     std::vector<Room> rooms;
     //we could also add a vector for devices that are outside of the house
 };
-
+}
 #endif // SMARTHOME_H

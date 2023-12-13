@@ -3,6 +3,7 @@
 
 #include <string>
 
+namespace smartHome{
 class Sensor {
 public:
     Sensor(const std::string& type, const std::string& sensorId, double value, bool isFunctional);
@@ -18,5 +19,5 @@ private:
     double value;
     bool isFunctional;
 };
-
+}
 #endif // SENSOR_H

@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 
+namespace smartHome{
 SmartHome::SmartHome(const std::vector<Room> rooms)
     : rooms(rooms) {}
 
@@ -79,4 +80,5 @@ int main(){
 
     //here we will be the actual usage of the aplication
     return 0;
+}
 }

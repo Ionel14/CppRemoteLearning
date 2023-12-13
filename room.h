@@ -5,6 +5,7 @@
 #include <vector>
 #include "device.h"
 
+namespace smartHome{
 class Room {
 public:
     Room(const std::string& name, const std::string& roomId, const std::vector<Device> devices);
@@ -18,5 +19,5 @@ private:
     std::string roomId;
     std::vector<Device> devices;
 };
-
+}
 #endif // ROOM_H
