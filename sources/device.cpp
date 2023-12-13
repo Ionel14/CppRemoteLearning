@@ -2,16 +2,10 @@
 
 namespace smarthome {
   
-Device::Device(const std::string& name, bool state) {
-  this->name = name;  
-  this->state = state;
-}
+Device::Device(const std::string& name, bool state) : name(name), state(state) {}
 
-Device::Device(const std::string& name, bool state, const std::vector<Sensor>& sensors) {
-  this->name = name;
-  this->state = state;
-  this->sensors = sensors;
-}
+Device::Device(const std::string& name, bool state, const std::vector<Sensor>& sensors) : 
+  name(name), state(state), sensors(sensors) {}
 
 std::string Device::getName() {
   return name;

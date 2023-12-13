@@ -2,10 +2,7 @@
 
 namespace smarthome {
   
-Sensor::Sensor(const std::string& name, int value) {
-  this->name = name;
-  this->value = value;
-}
+Sensor::Sensor(const std::string& name, int value) : name(name), value(value) {}
 
 std::string Sensor::getName() {
   return name;
