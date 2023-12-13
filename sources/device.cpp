@@ -1,5 +1,7 @@
 #include "../headers/device.h"
 
+namespace smarthome {
+  
 Device::Device(const std::string& name, bool state) {
   this->name = name;  
   this->state = state;
@@ -30,3 +32,5 @@ void Device::setState(bool state) {
 void Device::addSensor(const Sensor& sensor){
   sensors.push_back(sensor);
 }
+
+} // namespace smarthome

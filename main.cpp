@@ -3,6 +3,8 @@
 #include <fstream>
 #include <vector>
 
+using namespace smarthome;
+
 int main () {
   std::vector<Sensor> sensors1 = { Sensor("temperature", 25), Sensor("humidity", 30) };
   std::vector<Sensor> sensors2 = { Sensor("light", 0) };

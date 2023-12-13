@@ -6,6 +6,8 @@
 #include <iostream>
 #include <vector>
 
+namespace smarthome {
+
 class SmartHome {
   // I'm using a vector, because it iterates through elements fast and it's easy to access an element. 
   // These are often used features because we need to be able to quickly choose a room or check every room.
@@ -26,4 +28,5 @@ public:
   void writeDataToFile(const std::string& filename);
 };
 
+} // namespace smarthome
 #endif  // SMARTHOME_SMARTHOME_H_

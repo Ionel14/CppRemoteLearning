@@ -6,6 +6,8 @@
 #include <iostream>
 #include <vector>
 
+namespace smarthome {
+
 class Room {
   std::string name;
   std::vector<Device> devices;
@@ -20,4 +22,5 @@ public:
   void addDevice(const Device& device);
 };
 
+} // namespace smarthome
 #endif  // SMARTHOME_ROOM_H_

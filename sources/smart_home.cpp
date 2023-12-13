@@ -4,6 +4,8 @@
 #include <regex>
 #include <string>
 
+namespace smarthome {
+  
 SmartHome::SmartHome(const std::vector<Room>& rooms) {
   this->rooms = rooms;
 }
@@ -79,3 +81,5 @@ void SmartHome::writeDataToFile(const std::string& filename) {
   }
   myFile.close();
 }
+
+} // namespace smarthome

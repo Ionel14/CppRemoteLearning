@@ -3,6 +3,8 @@
 
 #include <iostream>
 
+namespace smarthome {
+
 class Sensor {
   std::string name;
   int value;
@@ -16,4 +18,5 @@ public:
   void setValue(int value);
 };
 
+} // namespace smarthome
 #endif  // SMARTHOME_SENSOR_H_

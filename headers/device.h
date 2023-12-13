@@ -6,6 +6,8 @@
 #include <iostream>
 #include <vector>
 
+namespace smarthome {
+
 class Device {
   std::string name;
   bool state;
@@ -24,4 +26,5 @@ public:
   void addSensor(const Sensor& sensor);
 };
 
+} // namespace smarthome
 #endif  // SMARTHOME_DEVICE_H_

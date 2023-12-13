@@ -1,5 +1,7 @@
 #include "../headers/room.h"
 
+namespace smarthome {
+
 Room::Room(const std::string& name) {
   this->name = name;
 }
@@ -20,3 +22,5 @@ std::vector<Device> Room::getDevices() {
 void Room::addDevice(const Device& device){
   devices.push_back(device);
 }
+
+} // namespace smarthome
