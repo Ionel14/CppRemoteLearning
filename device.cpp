@@ -2,16 +2,16 @@
 
 namespace smartHome{
 // Constructor
-Device::Device(const std::string& type, const std::string& deviceId, bool status, const std::vector<Sensor> sensors)
+Device::Device(const std::string& type, const std::string& deviceId, bool status, const std::vector<Sensor>& sensors)
     : type(type), deviceId(deviceId), status(status), sensors(sensors) {}
 
 // Getter for device's type
-const std::string Device::getType() const {
+const std::string& Device::getType() const {
     return type;
 }
 
 // Getter for device's id
-const std::string Device::getId() const {
+const std::string& Device::getId() const {
     return deviceId;
 }
 
@@ -21,7 +21,20 @@ bool Device::getStatus() const {
 }
 
 // Getter for device's list of sensors
-const std::vector<Sensor> Device::getSensors() const {
+const std::vector<Sensor>& Device::getSensors() const {
     return sensors;
+}
+
+//Setters
+void Device::setType(const std::string& newType){
+    type = newType;
+}
+
+void Device::setStatus(bool newStatus){
+    status = newStatus;
+}
+
+void Device::setSensors(const std::vector<Sensor>& newSensors){
+    sensors = newSensors;
 }
 }

@@ -7,9 +7,9 @@
 namespace smartHome{
 class SmartHome {
 public:
-    SmartHome(const std::vector<Room> rooms);
+    SmartHome(const std::vector<Room>& rooms);
 
-    const std::vector<Room> getRooms() const;
+    const std::vector<Room>& getRooms() const;
 
     void readDataFromFile(const std::string& filename);
     void writeDataToFile(const std::string& filename) const;

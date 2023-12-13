@@ -1,12 +1,17 @@
+// I implemented the setters for each class, the id is considered the unique identifier for each class so it's constant
+// the parameters for setters are constant references to avoid the useless copies or the modification of the parameter inside of the function
+// I used the constant references for the functions to avoid useless copies
+// I sticked to the rule of 0 because for now I do not explicitly manage dinamic allocations
+
 #include "smarthome.h"
 #include <fstream>
 #include <iostream>
 
 namespace smartHome{
-SmartHome::SmartHome(const std::vector<Room> rooms)
+SmartHome::SmartHome(const std::vector<Room>& rooms)
     : rooms(rooms) {}
 
-const std::vector<Room> SmartHome::getRooms() const {
+const std::vector<Room>& SmartHome::getRooms() const {
     return rooms;
 }
 
@@ -18,7 +23,7 @@ void SmartHome::readDataFromFile(const std::string& filename) {
         return;
     }
 
-    rooms.clear(); // Curățăm vectorul existent înainte de a încărca noi date
+    rooms.clear(); // We clean the vector before adding new elements
 
     std::string roomName, roomId, deviceType, deviceId, sensorType;
     double sensorValue;
@@ -33,7 +38,7 @@ void SmartHome::readDataFromFile(const std::string& filename) {
             while (file >> sensorType >> sensorValue >> sensorFunctional) {
                 sensors.emplace_back(sensorType, deviceId, sensorValue, sensorFunctional);
                 char nextChar;
-                file >> nextChar; // Citiți separatorul sau sfârșitul liniei
+                file >> nextChar; // read the separator or the end of the line 
                 if (nextChar == '\n') {
                     break;
                 }
@@ -41,7 +46,7 @@ void SmartHome::readDataFromFile(const std::string& filename) {
 
             devices.emplace_back(deviceType, deviceId, deviceStatus, sensors);
             char nextChar;
-            file >> nextChar; // Citiți separatorul sau sfârșitul liniei
+            file >> nextChar; // read the separator or the end of the line 
             if (nextChar == '\n') {
                 break;
             }
