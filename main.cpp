@@ -1,14 +1,40 @@
+#include <vector>
 #include <iostream>
-#include "functions.cpp"
+
+#include "smart_home.h"
+
 int main()
 {
-    srand(time(0));
-    std::vector<Product> products;
-    for (int i = 0; i < 10; i++)
+    smart_home::SmartHome smartHome;
+    try
     {
-        products.push_back(Product());
+        smartHome.GetDataFromXml("../data.xml");
+        
+        //smart_home::Device device("BathroomDoor", "Door", true);
+        //smart_home::Sensor presence("PresenceSensor", "Presence", 0);
+        
+        // smart_home::Room *living = smartHome.GetRoom("LivingRoom");
+        // living->AddSensor(presence);
+        // living->AddDevice(device);
+
+        //smartHome.GetRoom("LivingRoom")->DeleteSensor("PresenceSensor");
+
+        smart_home::Sensor *lightSensor = smartHome.GetRoom("LivingRoom")->GetSensor("LightSensor");
+        if (lightSensor != nullptr)
+        {
+            float val = lightSensor->GetValue();
+            std::cout<< val;
+            lightSensor->SetValue(200);
+            std::cout<<smartHome.GetRoom("LivingRoom")->GetSensor("LightSensor")->GetValue();
+        }
+
+        smartHome.AddToXml("../data.xml");
+
+    }
+    catch(const std::invalid_argument& e)
+    {
+        std::cerr << e.what() << '\n';
     }
     
-    std::cout<<"Your total is: "<<GetTotalPrice(products)<< std::endl;
     return 0;
 }

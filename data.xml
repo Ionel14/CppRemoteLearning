@@ -1,0 +1,15 @@
+<SmartHome>
+    <Room name="Kitchen">
+        <Sensor name="HumiditySensor" type="Humidity" value="11"/>
+        <Sensor name="PresenceSensor" type="Presence" value="1"/>
+        <Device name="Fan" type="Fan" status="false"/>
+        <Device name="ACUnit" type="AC" status="false"/>
+    </Room>
+    <Room name="LivingRoom">
+        <Sensor name="LightSensor" type="Light" value="200"/>
+        <Sensor name="TemperatureSensor" type="Temperature" value="20"/>
+        <Device name="BathroomDoor" type="Door" status="true"/>
+        <Device name="KitchenDoor" type="Door" status="true"/>
+        <Device name="LightBulb" type="Light" status="false"/>
+    </Room>
+</SmartHome>
