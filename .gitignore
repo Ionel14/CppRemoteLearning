@@ -35,8 +35,9 @@
 CMakeCache.txt
 CMakeFiles
 cmake_install.cmake
-homework
 Makefile
+homework
+smart_home
 
 # VSCode
 .vscode/
