@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(homework)
+project(SmartHomeProject)
 
-add_executable(homework cmmdc.cpp max_digit.cpp calculator.cpp)
+add_executable(SmartHomeProject device.cpp room.cpp sensor.cpp smarthome.cpp) 
+
