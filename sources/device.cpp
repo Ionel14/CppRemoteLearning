@@ -19,6 +19,10 @@ std::vector<Sensor> Device::getSensors() {
   return sensors;
 }
 
+std::string Device::getType() {
+  return type;
+}
+
 void Device::setState(bool state) {
   this->state = state;
 }

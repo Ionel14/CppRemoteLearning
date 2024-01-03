@@ -2,6 +2,9 @@
 #define SMARTHOME_ROOM_H_
 
 #include "device.h"
+#include "device_ac_unit.h"
+#include "device_fan.h"
+#include "device_lightbulb.h"
 
 #include <iostream>
 #include <vector>

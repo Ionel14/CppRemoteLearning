@@ -14,8 +14,6 @@ class SmartHome {
   // It's slower at inserting/ removing elements, but a home's rooms/ devices/ sensors will not change that frequently.
   std::vector<Room> rooms;
 
-  const char *resourses_directory="resources/";
-
 public:
   SmartHome() = default;
   SmartHome(const std::vector<Room>& rooms);
@@ -24,8 +22,6 @@ public:
 
   void addRoom(const Room& room);
 
-  void readDataFromFile(const std::string& filename);
-  void writeDataToFile(const std::string& filename);
 };
 
 } // namespace smarthome

@@ -2,6 +2,9 @@
 #define SMARTHOME_DEVICE_H_
 
 #include "sensor.h"
+#include "sensor_humidity.h"
+#include "sensor_light.h"
+#include "sensor_temperature.h"
 
 #include <iostream>
 #include <vector>
@@ -13,6 +16,8 @@ class Device {
   bool state;
   std::vector<Sensor> sensors;
 
+  const std::string type = "Undefined";
+
 public:
   Device(const std::string& name, bool state);
   Device(const std::string& name, bool state, const std::vector<Sensor>& sensors);
@@ -20,6 +25,7 @@ public:
   std::string getName();
   bool getState();
   std::vector<Sensor> getSensors();
+  virtual std::string getType();
 
   void setState(bool state);
 

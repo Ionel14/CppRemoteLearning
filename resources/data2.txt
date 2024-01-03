@@ -1,13 +1,13 @@
 Room: bedroom
-	Device: ac_unit off
-		Sensor: temperature 25
-		Sensor: humidity 30
-	Device: lightbulb on
-		Sensor: light 0
+	Device: ac_unit1 off
+		Sensor: temperature1 25
+		Sensor: humidity1 30
+	Device: lightbulb1 on
+		Sensor: light1 0
 Room: living_room
-	Device: fan off
-		Sensor: temperature 20
-		Sensor: humidity 40
+	Device: fan1 off
+		Sensor: temperature2 20
+		Sensor: humidity2 40
 Room: kitchen
-	Device: lightbulb off
-		Sensor: light 1
+	Device: lightbulb2 off
+		Sensor: light2 1
