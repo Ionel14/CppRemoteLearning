@@ -3,7 +3,10 @@
 
 #include <string>
 #include <vector>
-#include "device.h"
+#include "devices/device.h"
+#include "devices/securitydevice.h"
+#include "devices/thermostatdevice.h"
+#include "devices/voicecontroldevice.h"
 
 namespace smartHome{
 class Room {
