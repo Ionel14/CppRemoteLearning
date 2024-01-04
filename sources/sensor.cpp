@@ -3,11 +3,12 @@
 namespace smarthome {
   
 Sensor::Sensor(const std::string& name, int value) : name(name), value(value) {}
-Sensor::Sensor(const Sensor& other) : name(other.name), value(other.value) {}
-Sensor::Sensor(const Sensor&& other) : name(other.name), value(other.value) {}
+Sensor::Sensor(const Sensor& other) : type(other.type), name(other.name), value(other.value) {}
+Sensor::Sensor(const Sensor&& other) : type(other.type), name(other.name), value(other.value) {}
 
 Sensor& Sensor::operator=(const Sensor& other) {
   if (this != &other) {
+    type = other.type;
     name = other.name;
     value = other.value;
   }
@@ -16,6 +17,7 @@ Sensor& Sensor::operator=(const Sensor& other) {
 
 Sensor& Sensor::operator=(const Sensor&& other) {
   if (this != &other) {
+    type = other.type;
     name = other.name;
     value = other.value;
   }

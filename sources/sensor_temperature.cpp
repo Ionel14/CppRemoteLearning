@@ -2,10 +2,12 @@
 
 namespace smarthome {
   
-SensorTemperature::SensorTemperature(const std::string& name, int value) : Sensor(name, value) {}
+SensorTemperature::SensorTemperature(const std::string& name, int value) : Sensor(name, value) {
+  type = "Temperature";
+}
 
-std::string SensorTemperature::getType() {
-  return type;
+void SensorTemperature::printPurpose() {
+  std::cout << "This sensor measures the temperature in a room\n";
 }
 
 } // namespace smarthome

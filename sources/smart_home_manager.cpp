@@ -12,33 +12,48 @@ SmartHome SmartHomeManager::readDataFromFile(const std::string& filename) {
   std::ifstream myFile;
   myFile.open(resourses_directory + filename);
 
-  std::string word1, word2;
+  std::string word1, word2, word3;
   while (!myFile.eof()) {
-    myFile >> word1;
+    myFile >> word1 >> word2;
     while (word1 == "Room:") {
-      myFile >> word1;
-      Room room(word1);
+      Room room(word2);
 
-      myFile >> word1;
-      while (word1 == "Device:") {
-        myFile >> word1 >> word2;
+      myFile >> word1 >> word2;
+      while (word2 == "Device:") {
+        myFile >> word2 >> word3;
         
         bool state;
-        if(word2 == "on") {
+        if(word3 == "on") {
           state = 1;
         } else {
           state = 0;
         }
-        Device device(word1, state);
 
-        myFile >> word1;
-        while (word1 == "Sensor:") {
+        Device *device;
+        if(word1 == "AC"){
+          device = new DeviceAcUnit(word2, state);
+        } else if (word1 == "Fan") {
+          device = new DeviceFan(word2, state);
+        } else {
+          device = new DeviceLightbulb(word2, state);
+        }
+
+        myFile >> word1 >> word2;
+        while (word2 == "Sensor:") {
+          myFile >> word2 >> word3;
+
+          Sensor *sensor;
+          if(word1 == "Humidity"){
+            sensor = new SensorHumidity(word2, stoi(word3));
+          } else if (word1 == "Light") {
+            sensor = new SensorLight(word2, stoi(word3));
+          } else {
+            sensor = new SensorTemperature(word2, stoi(word3));
+          }
+
+          device->addSensor(sensor);
+
           myFile >> word1 >> word2;
-          Sensor sensor(word1, stoi(word2));
-
-          device.addSensor(sensor);
-
-          myFile >> word1;
         }
         room.addDevice(device);
       }
@@ -58,15 +73,15 @@ void SmartHomeManager::writeDataToFile(const std::string& filename, SmartHome sm
 
     for (auto device : room.getDevices()) {
       std::string state;
-      if (device.getState()) {
+      if (device->getState()) {
         state = "on";
       } else {
         state = "off";
       }
-      myFile << "\tDevice: " << device.getName() << " " << state << std::endl;
+      myFile << "\t" << device->getType() << " Device: " << device->getName() << " " << state << std::endl;
 
-      for (auto sensor : device.getSensors()) {
-        myFile << "\t\tSensor: " << sensor.getName() << " " << sensor.getValue() << std::endl;
+      for (auto sensor : device->getSensors()) {
+        myFile << "\t\t" << sensor->getType() << " Sensor: " << sensor->getName() << " " << sensor->getValue() << std::endl;
       }
     }
   }

@@ -8,12 +8,10 @@
 namespace smarthome {
 
 class SensorLight : public Sensor {
-  const std::string type = "Light";
-
 public:
   SensorLight(const std::string& name, int value);
 
-  std::string getType();
+  void printPurpose();
 };
 
 } // namespace smarthome

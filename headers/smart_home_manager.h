@@ -9,11 +9,12 @@
 namespace smarthome {
 
 class SmartHomeManager {
-  static constexpr const char *resourses_directory = "resources/";
-
 public:
   static SmartHome readDataFromFile(const std::string& filename);
   static void writeDataToFile(const std::string& filename, SmartHome smarthome);
+
+private:
+  static constexpr const char *resourses_directory = "resources/";
 };
 
 } // namespace smarthome

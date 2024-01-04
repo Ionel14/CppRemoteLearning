@@ -9,13 +9,11 @@
 namespace smarthome {
 
 class DeviceFan : public Device {
-  const std::string type = "Fan";
-
 public:
   DeviceFan(const std::string& name, bool state);
-  DeviceFan(const std::string& name, bool state, const std::vector<Sensor>& sensors);
+  DeviceFan(const std::string& name, bool state, const std::vector<Sensor*>& sensors);
 
-  std::string getType();
+  void printPurpose();
 };
 
 } // namespace smarthome

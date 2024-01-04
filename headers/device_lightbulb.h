@@ -9,13 +9,11 @@
 namespace smarthome {
 
 class DeviceLightbulb : public Device {
-  const std::string type = "Lightbulb";
-
 public:
   DeviceLightbulb(const std::string& name, bool state);
-  DeviceLightbulb(const std::string& name, bool state, const std::vector<Sensor>& sensors);
+  DeviceLightbulb(const std::string& name, bool state, const std::vector<Sensor*>& sensors);
 
-  std::string getType();
+  void printPurpose();
 };
 
 } // namespace smarthome

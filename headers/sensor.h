@@ -6,11 +6,6 @@
 namespace smarthome {
 
 class Sensor {
-  std::string name;
-  int value;
-
-  const std::string type = "Undefined";
-
 public:
   Sensor(const std::string& name, int value);
   Sensor(const Sensor& other);
@@ -23,9 +18,16 @@ public:
 
   std::string getName();
   int getValue();
-  virtual std::string getType();
+  std::string getType();
 
   void setValue(int value);
+
+  virtual void printPurpose() = 0;
+
+protected:  
+  std::string type;
+  std::string name;
+  int value;
 };
 
 } // namespace smarthome

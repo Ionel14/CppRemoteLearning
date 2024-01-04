@@ -9,13 +9,11 @@
 namespace smarthome {
 
 class DeviceAcUnit : public Device {
-  const std::string type = "AC_Unit";
-
 public:
   DeviceAcUnit(const std::string& name, bool state);
-  DeviceAcUnit(const std::string& name, bool state, const std::vector<Sensor>& sensors);
+  DeviceAcUnit(const std::string& name, bool state, const std::vector<Sensor*>& sensors);
 
-  std::string getType();
+  void printPurpose();
 };
 
 } // namespace smarthome

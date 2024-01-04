@@ -2,13 +2,17 @@
 
 namespace smarthome {
   
-DeviceFan::DeviceFan(const std::string& name, bool state) : Device(name, state) {}
+DeviceFan::DeviceFan(const std::string& name, bool state) : Device(name, state) {
+  type = "Fan";
+}
 
-DeviceFan::DeviceFan(const std::string& name, bool state, const std::vector<Sensor>& sensors) : 
-  Device(name, state, sensors) {}
+DeviceFan::DeviceFan(const std::string& name, bool state, const std::vector<Sensor*>& sensors) : 
+  Device(name, state, sensors) {
+  type = "Fan";
+}
 
-std::string DeviceFan::getType() {
-  return type;
+void DeviceFan::printPurpose() {
+  std::cout << "This device controls the air circulation in a room\n";
 }
 
 } // namespace smarthome

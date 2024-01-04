@@ -2,13 +2,17 @@
 
 namespace smarthome {
   
-DeviceAcUnit::DeviceAcUnit(const std::string& name, bool state) : Device(name, state) {}
+DeviceAcUnit::DeviceAcUnit(const std::string& name, bool state) : Device(name, state) {
+  type = "AC";
+}
 
-DeviceAcUnit::DeviceAcUnit(const std::string& name, bool state, const std::vector<Sensor>& sensors) : 
-  Device(name, state, sensors) {}
+DeviceAcUnit::DeviceAcUnit(const std::string& name, bool state, const std::vector<Sensor*>& sensors) : 
+  Device(name, state, sensors) {
+  type = "AC";
+}
 
-std::string DeviceAcUnit::getType() {
-  return type;
+void DeviceAcUnit::printPurpose() {
+  std::cout << "This device cools down a room\n";
 }
 
 } // namespace smarthome
