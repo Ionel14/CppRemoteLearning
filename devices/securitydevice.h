@@ -6,7 +6,7 @@
 namespace smartHome {
     class SecurityDevice : public Device {
     public:
-        SecurityDevice(const std::string& deviceId, bool status, const std::vector<Sensor>& sensors);
+        SecurityDevice(const std::string& deviceId, bool status, const std::vector<Sensor*>& sensors);
 
         void powerOn() override;
 

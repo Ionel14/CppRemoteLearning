@@ -2,7 +2,10 @@
 #include <iostream>
 
 namespace smartHome {
-    VoiceControlDevice::VoiceControlDevice(const std::string& deviceId, bool status, const std::vector<Sensor>& sensors)
+    const std::string VoiceControlDevice::keyword1 = "Activate";
+    const std::string VoiceControlDevice::keyword2 = "Shut down";
+
+    VoiceControlDevice::VoiceControlDevice(const std::string& deviceId, bool status, const std::vector<Sensor*>& sensors)
         : Device("Voice Control", deviceId, status, sensors) {}
 
     void VoiceControlDevice::powerOn() {
@@ -10,12 +13,11 @@ namespace smartHome {
         if(getStatus()){
             return;
         }
-        std::string keyword = "Activate";
         for(const auto& sensor : getSensors()){
-            if(sensor.getValue() > 35.0 && keyword == getCommand()){
+            if(sensor->getValue() > 35.0 && keyword1 == getCommand()){
                 std::cout << "Voice control device is now active." << std::endl;
                 setStatus(true);
-                return; //stop checking for an active sensor if one is already found
+                break; //stop checking for an active sensor if one is already found
             }
         }
         
@@ -29,7 +31,7 @@ namespace smartHome {
 
         std::string keyword = "Shut down";
         for(const auto& sensor : getSensors()){
-            if(sensor.getValue() > 35.0 && keyword == getCommand()){
+            if(sensor->getValue() > 35.0 && keyword == getCommand()){
                 std::cout << "Voice control device is now inactive." << std::endl;
                 setStatus(false);
                 break; //stop checking for a shut down reason if one is already found

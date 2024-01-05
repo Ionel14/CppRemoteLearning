@@ -6,7 +6,7 @@
 namespace smartHome {
     class VoiceControlDevice : public Device {
     public:
-        VoiceControlDevice(const std::string& deviceId, bool status, const std::vector<Sensor>& sensors);
+        VoiceControlDevice(const std::string& deviceId, bool status, const std::vector<Sensor*>& sensors);
 
         void powerOn() override;
 
@@ -18,6 +18,9 @@ namespace smartHome {
 
     private:
         std::string command;
+
+        static const std::string keyword1;
+        static const std::string keyword2;
     };
 }
 

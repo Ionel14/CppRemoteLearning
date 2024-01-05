@@ -6,6 +6,7 @@
 #include "smarthome.h"
 #include <fstream>
 #include <iostream>
+#include <memory>
 
 namespace smartHome{
     SmartHome::SmartHome(const std::vector<Room>& rooms)
@@ -14,6 +15,31 @@ namespace smartHome{
     const std::vector<Room>& SmartHome::getRooms() const {
         return rooms;
     }
+
+    // Factory function
+    std::unique_ptr<Sensor> createSensor(const std::string& sensorType, const std::string& sensorId, double value, bool isFunctional) {
+        if (sensorType == "Temperature") {
+            return std::make_unique<TemperatureSensor>(sensorId, value, isFunctional);
+        } else if (sensorType == "Motion") {
+            return std::make_unique<MotionSensor>(sensorId, value, isFunctional);
+        } else if (sensorType == "Sound") {
+            return std::make_unique<SoundSensor>(sensorId, value, isFunctional);
+        } else {
+            return nullptr;
+        }
+    }
+
+    std::unique_ptr<Device> createDevice(const std::string& deviceType, const std::string& deviceId, bool status, const std::vector<Sensor*>& sensors) {
+    if (deviceType == "Thermostat") {
+        return std::make_unique<ThermostatDevice>(deviceId, status, sensors);
+    } else if (deviceType == "Security") {
+        return std::make_unique<SecurityDevice>(deviceId, status, sensors);
+    } else if (deviceType == "VoiceControl") {
+        return std::make_unique<VoiceControlDevice>(deviceId, status, sensors);
+    } else {
+        return nullptr;
+    }
+}
 
     void SmartHome::readDataFromFile(const std::string& filename) {
         std::ifstream file(filename);
@@ -30,23 +56,29 @@ namespace smartHome{
         bool deviceStatus, sensorFunctional;
 
         while (file >> roomName >> roomId) {
-            std::vector<Device> devices;
+            std::vector<Device*> devices;
 
             while (file >> deviceType >> deviceId >> deviceStatus) {
-                std::vector<Sensor> sensors;
+                std::vector<Sensor*> sensors;
 
                 while (file >> sensorType >> sensorValue >> sensorFunctional) {
-                    sensors.emplace_back(sensorType, deviceId, sensorValue, sensorFunctional);
+                    // Create appropriate Sensor object based on type
+                    std::unique_ptr<Sensor> newSensor = createSensor(sensorType, deviceId, sensorValue, sensorFunctional);
+                    sensors.push_back(newSensor.get());
+
                     char nextChar;
-                    file >> nextChar; // read the separator or the end of the line 
+                    file >> nextChar; // read the separator or the end of the line
                     if (nextChar == '\n') {
                         break;
                     }
                 }
 
-                devices.emplace_back(deviceType, deviceId, deviceStatus, sensors);
+                // Create appropriate Device object based on type
+                std::unique_ptr<Device> newDevice = createDevice(deviceType, deviceId, deviceStatus, sensors);
+                devices.push_back(newDevice.release());
+
                 char nextChar;
-                file >> nextChar; // read the separator or the end of the line 
+                file >> nextChar; // read the separator or the end of the line
                 if (nextChar == '\n') {
                     break;
                 }
@@ -70,10 +102,10 @@ namespace smartHome{
             file << room.getName() << " " << room.getId() << "\n";
 
             for (const auto& device : room.getDevices()) {
-                file << "  " << device.getType() << " " << device.getId() << " " << device.getStatus() << "\n";
+                file << "  " << device->getType() << " " << device->getId() << " " << device->getStatus() << "\n";
 
-                for (const auto& sensor : device.getSensors()) {
-                    file << "    " << sensor.getType() << " " << sensor.getValue() << " " << sensor.getIsFunctional() << "\n";
+                for (const auto& sensor : device->getSensors()) {
+                    file << "    " << sensor->getType() << " " << sensor->getValue() << " " << sensor->getIsFunctional() << "\n";
                 }
             }
         }
@@ -84,16 +116,16 @@ namespace smartHome{
     void printStatus(smartHome::SmartHome home){
         for(const auto& room : home.getRooms()){
             for(const auto& device : room.getDevices()){
-                std::cout << "For room " << room.getName() << " the device " << device.getId() << " has status: ";
-                if(device.getStatus()){
+                std::cout << "For room " << room.getName() << " the device " << device->getId() << " has status: ";
+                if(device->getStatus()){
                     std::cout << "active" << std::endl;
                 }
                 else{
                     std::cout << "inactive" << std::endl;
                 }
-                for(const auto& sensor : device.getSensors()){
-                    std::cout << "For the current device the sensor " << sensor.getID() << " is: ";
-                    if(sensor.getIsFunctional()){
+                for(const auto& sensor : device->getSensors()){
+                    std::cout << "For the current device the sensor " << sensor->getID() << " is: ";
+                    if(sensor->getIsFunctional()){
                         std::cout << "functional." << std::endl;
                     }
                     else{
@@ -103,55 +135,55 @@ namespace smartHome{
             }
         }
     }
+}
 
-    int main(){
+int main(){
 
-        // Create sensors
-        smartHome::TemperatureSensor sensor1("T1", 25.0, true);
-        smartHome::MotionSensor sensor2("M1", 0.0, true);
-        smartHome::TemperatureSensor sensor3("T2", 15.0, false);
-        smartHome::SoundSensor sensor4("S1", 70.0, true);
-        smartHome::SoundSensor sensor5("S2", 40.0, true);
-        smartHome::MotionSensor sensor6("M2", 1.0, true);
+    // Create sensors
+    smartHome::Sensor* sensor1 = new smartHome::TemperatureSensor("T1", 25.0, true);
+    smartHome::Sensor* sensor2 = new smartHome::MotionSensor("M1", 0.0, true);
+    smartHome::Sensor* sensor3 = new smartHome::TemperatureSensor("T2", 15.0, false);
+    smartHome::Sensor* sensor4 = new smartHome::SoundSensor("S1", 70.0, true);
+    smartHome::Sensor* sensor5 = new smartHome::SoundSensor("S2", 40.0, true);
+    smartHome::Sensor* sensor6 = new smartHome::MotionSensor("M2", 1.0, true);
 
-        // Create devices
-        std::vector<smartHome::Sensor> device1Sensors;
-        device1Sensors.push_back(sensor1);
-        device1Sensors.push_back(sensor3);
-        std::vector<smartHome::Sensor> device2Sensors;
-        device2Sensors.push_back(sensor2);
-        device2Sensors.push_back(sensor6);
-        std::vector<smartHome::Sensor> device3Sensors;
-        device3Sensors.push_back(sensor4);
-        device3Sensors.push_back(sensor5);
-        std::vector<smartHome::Sensor> device4Sensors;
-        device4Sensors.push_back(sensor1);
+    // Create devices
+    std::vector<smartHome::Sensor*> device1Sensors;
+    device1Sensors.push_back(sensor1);
+    device1Sensors.push_back(sensor3);
+    std::vector<smartHome::Sensor*> device2Sensors;
+    device2Sensors.push_back(sensor2);
+    device2Sensors.push_back(sensor6);
+    std::vector<smartHome::Sensor*> device3Sensors;
+    device3Sensors.push_back(sensor4);
+    device3Sensors.push_back(sensor5);
+    std::vector<smartHome::Sensor*> device4Sensors;
+    device4Sensors.push_back(sensor1);
 
-        smartHome::ThermostatDevice device1("D1", true, device1Sensors);
-        smartHome::SecurityDevice device2("D2", false, device2Sensors);
-        smartHome::VoiceControlDevice device3("D3", true, device3Sensors);
-        smartHome::ThermostatDevice device4("D4", true, device4Sensors);
-        smartHome::VoiceControlDevice device5("D5", false, std::vector<Sensor>{});
+    smartHome::Device* device1 = new smartHome::ThermostatDevice("D1", true, device1Sensors);
+    smartHome::Device* device2 = new smartHome::SecurityDevice("D2", false, device2Sensors);
+    smartHome::Device* device3 = new smartHome::VoiceControlDevice("D3", true, device3Sensors);
+    smartHome::Device* device4 = new smartHome::ThermostatDevice("D4", true, device4Sensors);
+    smartHome::Device* device5 = new smartHome::VoiceControlDevice("D5", false, std::vector<smartHome::Sensor*>{});
 
-        // Create rooms
-        std::vector<smartHome::Device> room1Devices;
-        room1Devices.push_back(device1);
-        std::vector<smartHome::Device> room2Devices;
-        room2Devices.push_back(device3);
-        room2Devices.push_back(device4);
-        std::vector<smartHome::Device> room3Devices;
-        room3Devices.push_back(device5);
-        std::vector<smartHome::Device> room4Devices;
-        room3Devices.push_back(device2);
+    // Create rooms
+    std::vector<smartHome::Device*> room1Devices;
+    room1Devices.push_back(device1);
+    std::vector<smartHome::Device*> room2Devices;
+    room2Devices.push_back(device3);
+    room2Devices.push_back(device4);
+    std::vector<smartHome::Device*> room3Devices;
+    room3Devices.push_back(device5);
+    std::vector<smartHome::Device*> room4Devices;
+    room3Devices.push_back(device2);
 
-        smartHome::Room room1("Living Room", "R1", room1Devices);
-        smartHome::Room room2("Bedroom", "R2", room2Devices);
-        smartHome::Room room3("Kitchen", "R3", room3Devices);
-        smartHome::Room room4("Outside", "R4", room4Devices);
+    smartHome::Room room1("Living Room", "R1", room1Devices);
+    smartHome::Room room2("Bedroom", "R2", room2Devices);
+    smartHome::Room room3("Kitchen", "R3", room3Devices);
+    smartHome::Room room4("Outside", "R4", room4Devices);
         
-        smartHome::SmartHome home({room1, room2, room3, room4});
-        printStatus(home);
-        //here we will be the actual usage of the aplication
-        return 0;
-    }
+    smartHome::SmartHome home({room1, room2, room3, room4});
+    printStatus(home);
+    //here we will be the actual usage of the aplication
+    return 0;
 }

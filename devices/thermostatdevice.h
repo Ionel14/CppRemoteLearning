@@ -6,7 +6,7 @@
 namespace smartHome {
     class ThermostatDevice : public Device {
     public:
-        ThermostatDevice(const std::string& deviceId, bool status, const std::vector<Sensor>& sensors);
+        ThermostatDevice(const std::string& deviceId, bool status, const std::vector<Sensor*>& sensors);
 
         void powerOn() override;
 

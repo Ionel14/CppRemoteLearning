@@ -2,7 +2,7 @@
 #include <iostream>
 
 namespace smartHome {
-    ThermostatDevice::ThermostatDevice(const std::string& deviceId, bool status, const std::vector<Sensor>& sensors)
+    ThermostatDevice::ThermostatDevice(const std::string& deviceId, bool status, const std::vector<Sensor*>& sensors)
         : Device("Thermostat", deviceId, status, sensors) {}
 
     void ThermostatDevice::powerOn() {
@@ -12,10 +12,10 @@ namespace smartHome {
         }
 
         for(const auto& sensor : getSensors()){
-            if(sensor.getValue() < 19.0){
+            if(sensor->getValue() < 19.0){
                 std::cout << "Thermostat device is now active." << std::endl;
                 setStatus(true);
-                return; //stop checking for an active sensor if one is already found
+                break; //stop checking for an active sensor if one is already found
             }
         }
     }
@@ -29,7 +29,7 @@ namespace smartHome {
         bool inactive = true;
         //check if there is any sensor active
         for(const auto& sensor : getSensors()){
-            if(sensor.getValue() < 19.0){
+            if(sensor->getValue() < 19.0){
                 inactive = false;
                 break; //stop checking for an active sensor if one is already found
             }

@@ -9,7 +9,7 @@ namespace smartHome {
         MotionSensor(const std::string& sensorId, double value, bool isFunctional);
 
         void measure() override;
-        
+
     };
 }
 
