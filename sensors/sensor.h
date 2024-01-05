@@ -7,7 +7,15 @@ namespace smartHome{
     class Sensor {
     public:
         Sensor(const std::string& type, const std::string& sensorId, double value, bool isFunctional);
+        Sensor(const Sensor& other);
+        Sensor& operator=(const Sensor& other);
 
+        // Move constructor
+        Sensor(Sensor&& other) noexcept;
+
+        // Move assignment operator
+        Sensor& operator=(Sensor&& other) noexcept;
+        
         // Destructor
         virtual ~Sensor() = default;
 
