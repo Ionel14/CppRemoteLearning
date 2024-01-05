@@ -2,7 +2,7 @@
 #define SMART_HOME_SENSORS_TEMPERATURE_SENSOR_H_
 
 #include "sensor.h"
-#include "../rooms/room.h"
+#include "rooms/room.h"
 
 namespace sensors {
 
@@ -11,10 +11,6 @@ namespace sensors {
 class TemperatureSensor : public Sensor {
   public:
     TemperatureSensor(rooms::Room* room): Sensor(room) {}
-
-    inline rooms::Room* GetRoom() override {
-      return room;
-    }
 
     inline std::any GetData() {
         return current_temperature;

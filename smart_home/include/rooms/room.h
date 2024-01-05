@@ -1,20 +1,37 @@
 #ifndef SMART_HOME_ROOMS_ROOM_H_
 #define SMART_HOME_ROOMS_ROOM_H_
 
+#include <string>
+
 namespace rooms {
 
-// Rule of Zero
+// Rule of Five implemented
 
 class Room {
   public:
-    Room(const float size): size(size) {}
+    Room(std::string name, const float size): name(name), size(size) {}
+
+    Room(const Room& other) : name(other.name), size(other.size) {}
+
+    Room& operator=(const Room& other);
+
+    Room(const Room&& other) : name(std::move(other.name)), size(other.size) {}
+
+    Room& operator=(Room&& other);
+
+    ~Room() = default;
 
     inline float GetSize() {
       return size;
     };
 
+    inline std::string GetName() {
+      return name;
+    };
+
   private:
-    const float size = 0;
+    std::string name;
+    float size = 0;
 };
 
 } // namespace rooms

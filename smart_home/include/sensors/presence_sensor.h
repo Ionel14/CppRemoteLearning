@@ -9,6 +9,8 @@ namespace sensors {
 
 class PresenceSensor : public Sensor {
   public:
+    PresenceSensor(rooms::Room* room): Sensor(room) {}
+
     inline std::any GetData() override {
         return is_any_presence;
     }
@@ -23,4 +25,4 @@ class PresenceSensor : public Sensor {
 
 } // namespace sensors
 
-#endif SMART_HOME_SENSORS_PRESENCE_SENSOR_H_
+#endif // SMART_HOME_SENSORS_PRESENCE_SENSOR_H_

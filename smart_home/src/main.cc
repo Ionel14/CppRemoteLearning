@@ -1,8 +1,13 @@
 #include <iostream>
-#include "../include/sensors/temperature_sensor.h"
-#include "../include/services/temperature_service.h"
-#include "../include/devices/ac_unit.h"
-#include "../include/tiny_xml/tinyxml2.h"
+#include "sensors/temperature_sensor.h"
+#include "sensors/presence_sensor.h"
+#include "services/temperature_service.h"
+#include "services/presence_service.h"
+#include "services/status_service.h"
+#include "devices/ac_unit.h"
+#include "devices/fan.h"
+#include "devices/light_bulb.h"
+#include "tinyxml2.h"
 
 int main() {
 
@@ -19,11 +24,14 @@ int main() {
     tinyxml2::XMLElement *temperature_element = root_element->FirstChildElement();
     float temperature = std::stof(temperature_element->GetText());
 
-    rooms::Room* bedroom = new rooms::Room(5.2f);
+    services::StatusService *status_service = new services::StatusService();
+
+    rooms::Room* bedroom = new rooms::Room("Bedroom", 5.2f);
     
     std::cout << "Bedroom size: " << bedroom->GetSize() << std::endl;
 
     sensors::TemperatureSensor* temperature_sensor = new sensors::TemperatureSensor(bedroom);
+    sensors::PresenceSensor* presence_sensor = new sensors::PresenceSensor(bedroom);
 
     std::cout << "Temperature sensor's room's size: " << temperature_sensor->GetRoom()->GetSize() << std::endl;
 
@@ -40,11 +48,18 @@ int main() {
     node->InsertEndChild(element);
 
     devices::AcUnit* ac_unit = new devices::AcUnit(bedroom);
+    devices::Fan* fan = new devices::Fan(bedroom);
+    devices::LightBulb* light_bulb = new devices::LightBulb(bedroom);
 
     services::TemperatureService* temperature_service = new services::TemperatureService();
+    services::PresenceService* presence_service = new services::PresenceService();
 
     temperature_service->AddSensor(temperature_sensor);
     temperature_service->AddDevice(ac_unit);
+    temperature_service->AddDevice(fan);
+
+    presence_service->AddSensor(presence_sensor);
+    presence_service->AddDevice(light_bulb);
 
     std::cout << "Number of sensors of temperature service: " << temperature_service->GetSensors().size() << std::endl;
     std::cout << "Number of devices of temperature service: " << temperature_service->GetDevices().size() << std::endl;
@@ -72,6 +87,16 @@ int main() {
     node->InsertEndChild(element);
 
     temperature_service->Refresh();
+    
+    presence_service->Refresh();
+
+    status_service->AddSensor(temperature_sensor);
+    status_service->AddSensor(presence_sensor);
+    status_service->AddDevice(ac_unit);
+    status_service->AddDevice(fan);
+    status_service->AddDevice(light_bulb);
+
+    status_service->PrintStatus();
 
     write_document.SaveFile("../resources/write_document.xml");
 
