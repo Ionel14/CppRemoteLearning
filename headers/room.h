@@ -2,6 +2,9 @@
 #define SMARTHOME_ROOM_H_
 
 #include "device.h"
+#include "device_ac_unit.h"
+#include "device_fan.h"
+#include "device_lightbulb.h"
 
 #include <iostream>
 #include <vector>
@@ -9,17 +12,18 @@
 namespace smarthome {
 
 class Room {
-  std::string name;
-  std::vector<Device> devices;
-
 public:
   Room(const std::string& name);
-  Room(const std::string& name, const std::vector<Device>& devices);
+  Room(const std::string& name, const std::vector<Device*>& devices);
 
   std::string getName();
-  std::vector<Device> getDevices();
+  std::vector<Device*> getDevices();
 
-  void addDevice(const Device& device);
+  void addDevice(Device* device);
+
+private:
+  std::string name;
+  std::vector<Device*> devices;
 };
 
 } // namespace smarthome
