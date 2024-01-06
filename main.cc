@@ -3,7 +3,7 @@
 
 int main() {
     srand(static_cast<unsigned>(time(nullptr)));
-    SmartHome::User user(3, 2);
+    smart_home::User user(3);
     user.getUserHouse().writeDataToFile();
     std::cout << "Demo Control Devices\n";
     user.controlDevicesDemo();

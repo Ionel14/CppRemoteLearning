@@ -1,126 +1,129 @@
 #include "User.h"
+#include "../utils/StatusPrinter.h"
+#include "../devices/AirConditioner.h"
+#include "../devices/Heater.h"
+#include "../devices/Light.h"
 
-namespace SmartHome {
-    User::User(int numRooms, int numSensorsPerRoom) : userHouse(numRooms, numSensorsPerRoom) {
-        devices.push_back(new Device(LIGHT));
-        devices.push_back(new Device(HEATER));
-    }
-
-    User::User(const User& other) : userHouse(other.userHouse) {
-        devices.reserve(other.devices.size());
-        for (Device* device : other.devices) {
-            devices.push_back(new Device(*device));
-        }
-    }
-
-    User::User(User&& other) : userHouse(std::move(other.userHouse)), devices(std::move(other.devices)) {
-        other.devices.clear();
-    }
-
-    User& User::operator=(User&& other) {
-        if (this != &other) {
-            userHouse = std::move(other.userHouse);
-
-            for (Device* device : devices) {
-                delete device;
-            }
-            devices = std::move(other.devices);
-            other.devices.clear();
-        }
-        return *this;
-    }
-
-    User& User::operator=(const User& other) {
-        if (this != &other) {
-            userHouse = other.userHouse;
-
-            for (Device* device : devices) {
-                delete device;
-            }
-            devices.clear();
-
-            devices.reserve(other.devices.size());
-            for (Device* device : other.devices) {
-                devices.push_back(new Device(*device));
-            }
-        }
-        return *this;
+namespace smart_home {
+     User::User(int numRooms) : userHouse(numRooms) {
+        devices.push_back(new Light());
+        devices.push_back(new Heater());
+        devices.push_back(new AirConditioner());
     }
 
     User::~User() {
-        for (Device *device: devices) {
+        for (auto device : devices) {
             delete device;
         }
     }
 
+    User::User(const User& other) : userHouse(other.userHouse) {
+        copyDevices(other);
+    }
+
+    User::User(User&& other) noexcept : userHouse(std::move(other.userHouse)) {
+        moveDevices(other);
+    }
+
+    User& User::operator=(const User& other) {
+        if (this != &other) {
+            for (auto device : devices) {
+                delete device;
+            }
+            devices.clear();
+
+            userHouse = other.userHouse;
+
+            copyDevices(other);
+        }
+        return *this;
+    }
+
+    User& User::operator=(User&& other) noexcept {
+        if (this != &other) {
+            for (auto device : devices) {
+                delete device;
+            }
+            devices.clear();
+
+            userHouse = std::move(other.userHouse);
+
+            moveDevices(other);
+        }
+        return *this;
+    }
+
+
+    void User::copyDevices(const User& other) {
+        for (auto device : other.devices) {
+            devices.push_back(device->clone());
+        }
+    }
+
+    // Utility function for clearing and moving devices
+    void User::moveDevices(User& other) {
+        devices = std::move(other.devices);
+        other.devices.clear();
+    }
+
     void User::controlDevicesDemo() {
         while (true) {
-            std::cout << "Enter a device type (0 = Light, 1 = Heater): ";
+            std::cout << "Enter a device type (0 = Light, 1 = Heater, 2 = AirConditioner): ";
             int deviceType;
             std::cin >> deviceType;
-            if (deviceType == 0 || deviceType == 1) {
-                std::cout << "Enter a device status (0 = Off, 1 = On): ";
-                int deviceStatus;
-                std::cin >> deviceStatus;
-                if (deviceStatus == 0 || deviceStatus == 1) {
-                    devices[deviceType]->setDeviceStatus(deviceStatus);
-                    std::cout << "Device status changed." << std::endl;
+
+            switch(deviceType) {
+                case 0: {
+                    Light* light = dynamic_cast<Light*>(devices[deviceType]);
+                    if (light) {
+                        std::cout << "Enter brightness level (0-100): ";
+                        int brightness;
+                        std::cin >> brightness;
+                        light->setBrightness(brightness);
+                    }
                     break;
-                } else {
-                    std::cout << "Invalid device status." << std::endl;
                 }
-            } else {
-                std::cout << "Invalid device type." << std::endl;
+                case 1: {
+                    Heater* heater = dynamic_cast<Heater*>(devices[deviceType]);
+                    if (heater) {
+                        std::cout << "Enter temperature: ";
+                        int temperature;
+                        std::cin >> temperature;
+                        heater->setTemperature(temperature);
+                    }
+                    break;
+                }
+                case 2: {
+                    AirConditioner* ac = dynamic_cast<AirConditioner*>(devices[deviceType]);
+                    if (ac) {
+                        std::cout << "Enter temperature: ";
+                        int temperature;
+                        std::cin >> temperature;
+                        ac->setTemperature(temperature);
+                        std::cout << "Enter mode (1 COOLING, 2 HEATING): ";
+                        int mode;
+                        std::cin >> mode;
+                        if (mode == 1)
+                            ac->setMode(ACMode::COOLING);
+                        if (mode == 2)
+                            ac->setMode(ACMode::HEATING);
+                        if (mode != 1 && mode != 2)
+                            std::cout << "Invalid mode." << std::endl;
+                    }
+                    break;
+                }
+                default:
+                    std::cout << "Invalid device type." << std::endl;
+                    continue;
             }
+
+            std::cout << "Device settings updated." << std::endl;
+            break;
         }
     }
 
     void User::getDevicesStatus() {
-        for (Device *device: devices) {
-            device->displayStatuses();
-        }
-    }
-
-    void User::readSensorDataFromRoom(RoomType roomType) {
-        std::ifstream inFile("house_data.txt");
-        if (inFile.is_open()) {
-            std::string line;
-            bool foundRoom = false;
-
-            while (std::getline(inFile, line)) {
-                if (line.find("Room Type: ") != std::string::npos) {
-                    std::string typeStr = line.substr(11);
-                    RoomType currentRoomType;
-
-                    if (typeStr == "Living Room") {
-                        currentRoomType = LIVING_ROOM;
-                    } else if (typeStr == "Bedroom") {
-                        currentRoomType = BEDROOM;
-                    } else if (typeStr == "Kitchen") {
-                        currentRoomType = KITCHEN;
-                    } else {
-                        continue;
-                    }
-
-                    if (currentRoomType == roomType) {
-                        foundRoom = true;
-                        std::cout << line << std::endl;
-                        while (std::getline(inFile, line) && !line.empty() && line[0] != 'R') {
-                            std::cout << line << std::endl;
-                        }
-                        break;
-                    }
-                }
-            }
-
-            if (!foundRoom) {
-                std::cout << "Room not found." << std::endl;
-            }
-
-            inFile.close();
-        } else {
-            std::cerr << "Unable to open file for reading." << std::endl;
-        }
+        smart_home::StatusPrinter::printDeviceStatus(devices);
     }
 
     void User::readSensorDataFromRoomDemo() {
@@ -129,7 +132,7 @@ namespace SmartHome {
             int roomType;
             std::cin >> roomType;
             if (roomType == 0 || roomType == 1 || roomType == 2) {
-                readSensorDataFromRoom(static_cast<RoomType>(roomType));
+                StatusPrinter::printSensorDataFromRoom(static_cast<RoomType>(roomType));
                 break;
             } else {
                 std::cout << "Invalid room type." << std::endl;
@@ -138,10 +141,6 @@ namespace SmartHome {
     }
 
     House User::getUserHouse() const {
-        return userHouse;
-    }
-
-    void User::setUserHouse(const House &house) {
-        userHouse = house;
+        return House(3);
     }
 }

@@ -4,7 +4,7 @@
 #include <string>
 #include "../utils/enums.h"
 
-namespace SmartHome {
+namespace smart_home {
     class Sensor {
     public:
         Sensor(const std::string &sensorName, MeasureUnit sensorUnit);
@@ -12,15 +12,18 @@ namespace SmartHome {
         Sensor(Sensor &&other);
         Sensor &operator=(const Sensor &other);
         Sensor &operator=(Sensor &&other);
-        ~Sensor();
+        virtual ~Sensor();
         const std::string &getName() const;
         int getValue() const;
         MeasureUnit getUnit() const;
-        void generateRandomValue();
-    private:
+
+        virtual void generateRandomValue() = 0;
+
+    protected:
         std::string name;
-        int *value;
+        double *value;
         MeasureUnit unit;
     };
 }
+
 #endif

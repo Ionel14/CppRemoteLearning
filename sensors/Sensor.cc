@@ -1,12 +1,12 @@
 #include "Sensor.h"
 #include <cstdlib>
 
-namespace SmartHome {
+namespace smart_home {
     Sensor::Sensor(const std::string &sensorName, MeasureUnit sensorUnit)
-            : name(sensorName), value(new int(0)), unit(sensorUnit) {}
+            : name(sensorName), value(new double(0)), unit(sensorUnit) {}
 
     Sensor::Sensor(const Sensor &other)
-            : name(other.name), value(new int(*(other.value))), unit(other.unit) {}
+            : name(other.name), value(new double (*(other.value))), unit(other.unit) {}
 
     Sensor::Sensor(Sensor &&other)
             : name(std::move(other.name)), value(other.value), unit(other.unit) {
@@ -17,7 +17,7 @@ namespace SmartHome {
         if (this != &other) {
             delete value;
             name = other.name;
-            value = new int(*(other.value));
+            value = new double (*(other.value));
             unit = other.unit;
         }
         return *this;
@@ -44,13 +44,5 @@ namespace SmartHome {
 
     int Sensor::getValue() const {
         return *value;
-    }
-
-    MeasureUnit Sensor::getUnit() const {
-        return unit;
-    }
-
-    void Sensor::generateRandomValue() {
-        *value = rand() % 100;
     }
 }

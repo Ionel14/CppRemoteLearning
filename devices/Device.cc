@@ -1,6 +1,6 @@
 #include "Device.h"
 
-namespace SmartHome {
+namespace smart_home {
     Device::Device(DeviceType deviceType) : type(deviceType) {}
 
     std::string Device::getDeviceType() const {
@@ -39,10 +39,5 @@ namespace SmartHome {
     void Device::turnOff() {
         std::cout << "Turning off " << getDeviceType() << std::endl;
         status = 0;
-    }
-
-    void Device::displayStatuses() const {
-        std::cout << "Device Type: " << getDeviceType() << std::endl;
-        std::cout << "Device Status: " << getDeviceStatus() << std::endl;
     }
 }

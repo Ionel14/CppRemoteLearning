@@ -2,21 +2,35 @@
 #define NAGARROREMOTELEARNING_ROOM_H
 
 #include <vector>
-#include "../devices/Sensor.h"
+#include <memory>
+#include "../sensors/TemperatureSensor.h"
+#include "../sensors/HumiditySensor.h"
+#include "../sensors/MonoxidSensor.h"
+#include "../utils/enums.h"
+#include "../sensors/Sensor.h"
 
-namespace SmartHome {
+namespace smart_home {
     class Room {
     public:
         Room();
-        Room(int numSensors, RoomType roomType);
+        explicit Room(RoomType roomType);
+        Room(const Room&) = default;
+        Room& operator=(const Room&) = default;
+        Room(Room&&) noexcept = default;
+        Room& operator=(Room&&) noexcept = default;
         RoomType getType() const;
-        const std::vector<Sensor> &getSensors() const;
+        void addTemperatureSensor(const std::string& name);
+        void addHumiditySensor(const std::string& name);
+        void addMonoxideSensor(const std::string& name);
+
         void generateRandomSensorValues();
+
+        const std::vector<std::shared_ptr<Sensor>>& getSensors() const;
+
 
     private:
         RoomType type;
-        std::vector<Sensor> sensors;
-
+        std::vector<std::shared_ptr<Sensor>> sensors;
     };
 }
 

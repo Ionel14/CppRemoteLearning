@@ -4,6 +4,7 @@
 enum MeasureUnit {
     CELSIUS,
     PERCENT,
+    UNKNOWN,
 };
 
 enum RoomType {
@@ -15,6 +16,7 @@ enum RoomType {
 enum DeviceType {
     LIGHT,
     HEATER,
+    AIR_CONDITIONER,
 };
 
 #endif

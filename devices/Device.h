@@ -4,20 +4,23 @@
 #include <iostream>
 #include "../utils/enums.h"
 
-namespace SmartHome {
+namespace smart_home {
     class Device {
     public:
         explicit Device(DeviceType deviceType);
+        virtual ~Device() = default;
         std::string getDeviceType() const;
         std::string getDeviceStatus() const;
-        void setDeviceStatus(int status);
+        virtual void setDeviceStatus(int status);
         void setDeviceType(DeviceType deviceType);
         void turnOn();
         void turnOff();
-        void displayStatuses() const;
+        virtual void displayStatuses() const = 0;
+        virtual Device* clone() const = 0;
     private:
         int status = 0;
         DeviceType type;
     };
 }
+
 #endif

@@ -7,25 +7,26 @@
 #include "../house/House.h"
 #include "../devices/Device.h"
 
-namespace SmartHome {
+namespace smart_home {
     class User {
     public:
-        User(int numRooms, int numSensorsPerRoom);
-        User(const User& other);
-        User(User&& other);
-        User& operator=(const User& other);
-        User& operator=(User&& other);
+        explicit User(int numRooms);
         ~User();
-        void readSensorDataFromRoom(RoomType roomType);
+        User(const User& other);
+        User(User&& other) noexcept;
+        User& operator=(const User& other);
+        User& operator=(User&& other) noexcept;
+
         void readSensorDataFromRoomDemo();
         void controlDevicesDemo();
         void getDevicesStatus();
         House getUserHouse() const;
-        void setUserHouse(const House &house);
     private:
-        std::vector<Device *> devices;
-        SmartHome::House userHouse;
-
+        std::vector<Device*> devices;
+        smart_home::House userHouse;
+        void copyDevices(const User& other);
+        void moveDevices(User& other);
+    
     };
 }
 

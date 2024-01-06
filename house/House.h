@@ -4,17 +4,19 @@
 #include <vector>
 #include <array>
 #include "Room.h"
-#include "../devices/Device.h"
 
-namespace SmartHome {
+namespace smart_home {
     class House {
     public:
-        House(int numRooms, int numSensorsPerRoom);
+        explicit House(int numRooms);
         void writeDataToFile();
+
     private:
         static const int MAX_ROOMS = 3;
-        std::array<SmartHome::Room, MAX_ROOMS> rooms;
+        std::array<Room, MAX_ROOMS> rooms;
+        void initializeRooms();
+
+        static std::string getSensorTypeName(const Sensor& sensor);
     };
 }
-
 #endif
