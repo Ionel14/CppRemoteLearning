@@ -6,6 +6,18 @@
 
 using namespace smarthome;
 
+void deallocateSensorsMemory(std::vector<Sensor*>& sensors) {
+  for(auto sensor : sensors) {
+      delete sensor;
+    }
+}
+
+void deallocateDevicesMemory(std::vector<Device*>& devices) {
+  for(auto device : devices) {
+      delete device;
+    }
+}
+
 int main () {
   std::vector<Sensor*> sensors1 = { new SensorTemperature("temperature1", 25), new SensorHumidity("humidity1", 30) };
   std::vector<Sensor*> sensors2 = { new SensorLight("light1", 0) };
@@ -40,6 +52,16 @@ int main () {
   for(auto device : devices2) {
     device->printPurpose();
   }
+
+
+  deallocateSensorsMemory(sensors1);
+  deallocateSensorsMemory(sensors2);
+  deallocateSensorsMemory(sensors3);
+  deallocateSensorsMemory(sensors4);
+
+  deallocateDevicesMemory(devices1);
+  deallocateDevicesMemory(devices2);
+  deallocateDevicesMemory(devices3);
 
   return 0;
 }

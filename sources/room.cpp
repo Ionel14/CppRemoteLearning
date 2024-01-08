@@ -7,11 +7,11 @@ Room::Room(const std::string& name) : name(name) {}
 Room::Room(const std::string& name, const std::vector<Device*>& devices) 
   : name(name), devices(devices) {}
 
-std::string Room::getName() {
+std::string Room::getName() const {
   return name;
 }
 
-std::vector<Device*> Room::getDevices() {
+std::vector<Device*> Room::getDevices() const {
   return devices;
 }
 

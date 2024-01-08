@@ -13,7 +13,7 @@ public:
   DeviceFan(const std::string& name, bool state);
   DeviceFan(const std::string& name, bool state, const std::vector<Sensor*>& sensors);
 
-  void printPurpose();
+  void printPurpose() const;
 };
 
 } // namespace smarthome

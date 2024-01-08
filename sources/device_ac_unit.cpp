@@ -11,7 +11,7 @@ DeviceAcUnit::DeviceAcUnit(const std::string& name, bool state, const std::vecto
   type = "AC";
 }
 
-void DeviceAcUnit::printPurpose() {
+void DeviceAcUnit::printPurpose() const {
   std::cout << "This device cools down a room\n";
 }
 

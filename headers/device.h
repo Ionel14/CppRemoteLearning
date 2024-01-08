@@ -16,16 +16,16 @@ public:
   Device(const std::string& name, bool state);
   Device(const std::string& name, bool state, const std::vector<Sensor*>& sensors);
 
-  std::string getName();
-  bool getState();
-  std::vector<Sensor*> getSensors();
-  std::string getType();
+  std::string getName() const;
+  bool getState() const;
+  std::vector<Sensor*> getSensors() const;
+  std::string getType() const;
 
   void setState(bool state);
 
   void addSensor(Sensor* sensor);
 
-  virtual void printPurpose() = 0;
+  virtual void printPurpose() const = 0;
 
 protected:
   std::string type;

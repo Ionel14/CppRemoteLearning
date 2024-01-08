@@ -7,19 +7,19 @@ Device::Device(const std::string& name, bool state) : name(name), state(state) {
 Device::Device(const std::string& name, bool state, const std::vector<Sensor*>& sensors) : 
   name(name), state(state), sensors(sensors) {}
 
-std::string Device::getName() {
+std::string Device::getName() const {
   return name;
 }
 
-bool Device::getState() {
+bool Device::getState() const {
  return state;
 }
 
-std::vector<Sensor*> Device::getSensors() {
+std::vector<Sensor*> Device::getSensors() const {
   return sensors;
 }
 
-std::string Device::getType() {
+std::string Device::getType() const {
   return type;
 }
 

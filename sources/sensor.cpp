@@ -26,15 +26,15 @@ Sensor& Sensor::operator=(const Sensor&& other) {
 
 Sensor::~Sensor() {};
 
-std::string Sensor::getName() {
+std::string Sensor::getName() const {
   return name;
 }
 
-int Sensor::getValue() {
+int Sensor::getValue() const {
   return value;
 }
 
-std::string Sensor::getType() {
+std::string Sensor::getType() const {
   return type;
 }
 

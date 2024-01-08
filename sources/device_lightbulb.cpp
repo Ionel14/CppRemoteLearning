@@ -11,7 +11,7 @@ DeviceLightbulb::DeviceLightbulb(const std::string& name, bool state, const std:
   type = "Lightbulb";
 }
 
-void DeviceLightbulb::printPurpose() {
+void DeviceLightbulb::printPurpose() const {
   std::cout << "This device lights up a room\n";
 }
 

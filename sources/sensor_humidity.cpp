@@ -6,7 +6,7 @@ SensorHumidity::SensorHumidity(const std::string& name, int value) : Sensor(name
   type = "Humidity";
 }
 
-void SensorHumidity::printPurpose() {
+void SensorHumidity::printPurpose() const {
   std::cout << "This sensor measures the humidity level in a room\n";
 }
 

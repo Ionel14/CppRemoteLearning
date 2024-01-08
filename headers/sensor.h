@@ -14,15 +14,15 @@ public:
   Sensor& operator=(const Sensor& other);
   Sensor& operator=(const Sensor&& other);
 
-  ~Sensor();
+  virtual ~Sensor();
 
-  std::string getName();
-  int getValue();
-  std::string getType();
+  std::string getName() const;
+  int getValue() const;
+  std::string getType() const;
 
   void setValue(int value);
 
-  virtual void printPurpose() = 0;
+  virtual void printPurpose() const = 0;
 
 protected:  
   std::string type;

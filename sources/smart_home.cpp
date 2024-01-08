@@ -8,7 +8,7 @@ namespace smarthome {
   
 SmartHome::SmartHome(const std::vector<Room>& rooms) : rooms(rooms) {}
 
-std::vector<Room> SmartHome::getRooms() {
+std::vector<Room> SmartHome::getRooms() const {
   return rooms;
 }
 

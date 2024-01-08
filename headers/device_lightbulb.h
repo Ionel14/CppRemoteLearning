@@ -13,7 +13,7 @@ public:
   DeviceLightbulb(const std::string& name, bool state);
   DeviceLightbulb(const std::string& name, bool state, const std::vector<Sensor*>& sensors);
 
-  void printPurpose();
+  void printPurpose() const;
 };
 
 } // namespace smarthome
