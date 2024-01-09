@@ -112,9 +112,9 @@ void testUniquePtr() {
   up3 = std::move(UniquePtr<Room>(new Room("roomname4")));
   testOperatorStar(*up3);
 
-  // doesn't work
-  // std::cout << "\n ~ Operator[] test\n";
-  // UniquePtr<int[]> up4(new int[2]);
+  std::cout << "\n ~ Operator[] test\n";
+  UniquePtr<int> up4(new int[2]{2, 3});
+  std::cout << up4.get()[1] << std::endl;
 
 }
 
