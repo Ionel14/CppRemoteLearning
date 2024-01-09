@@ -1,8 +1,9 @@
 #ifndef SMARTHOME_H
 #define SMARTHOME_H
 
-#include <vector>
 #include "room.h"
+#include "myuniqueptr.h"
+#include <vector>
 
 namespace smartHome{
 class SmartHome {
