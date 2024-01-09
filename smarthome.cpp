@@ -4,6 +4,7 @@
 // I sticked to the rule of 0 because for now I do not explicitly manage dinamic allocations
 
 #include "smarthome.h"
+#include "myuniqueptr.h"
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -17,27 +18,28 @@ namespace smartHome{
     }
 
     // Factory function
-    std::unique_ptr<Sensor> createSensor(const std::string& sensorType, const std::string& sensorId, double value, bool isFunctional) {
+    MyUniquePtr<Sensor> createSensor(const std::string& sensorType, const std::string& sensorId, double value, bool isFunctional) {
+
         if (sensorType == "Temperature") {
-            return std::make_unique<TemperatureSensor>(sensorId, value, isFunctional);
+            return MyUniquePtr<Sensor>(new TemperatureSensor(sensorId, value, isFunctional));
         } else if (sensorType == "Motion") {
-            return std::make_unique<MotionSensor>(sensorId, value, isFunctional);
+            return MyUniquePtr<Sensor>(new MotionSensor(sensorId, value, isFunctional));
         } else if (sensorType == "Sound") {
-            return std::make_unique<SoundSensor>(sensorId, value, isFunctional);
+            return MyUniquePtr<Sensor>(new SoundSensor(sensorId, value, isFunctional));
         } else {
-            return nullptr;
+            return MyUniquePtr<Sensor>(nullptr);
         }
     }
 
-    std::unique_ptr<Device> createDevice(const std::string& deviceType, const std::string& deviceId, bool status, const std::vector<Sensor*>& sensors) {
+    MyUniquePtr<Device> createDevice(const std::string& deviceType, const std::string& deviceId, bool status, const std::vector<Sensor*>& sensors) {
     if (deviceType == "Thermostat") {
-        return std::make_unique<ThermostatDevice>(deviceId, status, sensors);
+        return MyUniquePtr<Device> (new ThermostatDevice(deviceId, status, sensors));
     } else if (deviceType == "Security") {
-        return std::make_unique<SecurityDevice>(deviceId, status, sensors);
+        return MyUniquePtr<Device> (new SecurityDevice(deviceId, status, sensors));
     } else if (deviceType == "VoiceControl") {
-        return std::make_unique<VoiceControlDevice>(deviceId, status, sensors);
+        return MyUniquePtr<Device> (new VoiceControlDevice(deviceId, status, sensors));
     } else {
-        return nullptr;
+        return MyUniquePtr<Device> (nullptr);
     }
 }
 
@@ -63,8 +65,8 @@ namespace smartHome{
 
                 while (file >> sensorType >> sensorValue >> sensorFunctional) {
                     // Create appropriate Sensor object based on type
-                    std::unique_ptr<Sensor> newSensor = createSensor(sensorType, deviceId, sensorValue, sensorFunctional);
-                    sensors.push_back(newSensor.get());
+                    MyUniquePtr<Sensor> newSensor = createSensor(sensorType, deviceId, sensorValue, sensorFunctional);
+                    sensors.push_back(newSensor.release());
 
                     char nextChar;
                     file >> nextChar; // read the separator or the end of the line
@@ -74,7 +76,7 @@ namespace smartHome{
                 }
 
                 // Create appropriate Device object based on type
-                std::unique_ptr<Device> newDevice = createDevice(deviceType, deviceId, deviceStatus, sensors);
+                MyUniquePtr<Device> newDevice = createDevice(deviceType, deviceId, deviceStatus, sensors);
                 devices.push_back(newDevice.release());
 
                 char nextChar;
