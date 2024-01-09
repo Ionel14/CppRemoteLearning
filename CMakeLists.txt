@@ -8,6 +8,7 @@ Devices/device.cpp Devices/acunit.cpp Devices/door.cpp Devices/lightbulb.cpp
 room.cpp 
 smart_home.cpp 
 smarthomestatus.cpp 
+uniqueptr.h
 TinyXml/tinyxml2.cpp)
 
 target_include_directories(smart_home PRIVATE TinyXml)
