@@ -105,7 +105,7 @@ void testUniquePtr() {
 
   std::cout << "\n ~ Operator bool test\n";
   std::cout << (up3 ? "not nullptr" : "nullptr") << std::endl;
-  up3.release();
+  up3.reset();
   std::cout << (up3 ? "not nullptr" : "nullptr") << std::endl;
 
   std::cout << "\n ~ Operator* test\n";

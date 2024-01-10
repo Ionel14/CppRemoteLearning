@@ -3,27 +3,32 @@
 
 #include <iostream>
 #include <vector>
+#include <memory>
 
 namespace smarthome {
 
-template<typename T>
+template<class T, class Deleter = std::default_delete<T>>
 class UniquePtr {
 public:
   constexpr UniquePtr() noexcept;
   constexpr UniquePtr(std::nullptr_t) noexcept;
-  explicit UniquePtr(T* data) noexcept;
+  explicit UniquePtr(T* data, const Deleter& deleter = Deleter()) noexcept;
+  UniquePtr(UniquePtr&& other) noexcept;
+  UniquePtr(const UniquePtr&) = delete;
 
   ~UniquePtr();
 
-  UniquePtr& operator=(UniquePtr&& other) noexcept;
   UniquePtr& operator=(std::nullptr_t) noexcept;
+  UniquePtr& operator=(UniquePtr&& other) noexcept;
   UniquePtr& operator=(const UniquePtr&) = delete;
 
   T* release() noexcept;
-  void reset(T* ptr) noexcept;
+  void reset(T* ptr = nullptr) noexcept;
   void swap(UniquePtr& other) noexcept;
 
   T* get() const noexcept;
+  Deleter& get_deleter() noexcept;
+  const Deleter& get_deleter() const noexcept;
   explicit operator bool() const noexcept;
 
   T& operator*() const noexcept;
@@ -33,58 +38,63 @@ public:
 
 private:
   T* data;
+  Deleter deleter;
 };
 
 
-template<typename  T>
-constexpr UniquePtr<T>::UniquePtr() noexcept : data(nullptr) {}
+template<class  T, class Deleter>
+constexpr UniquePtr<T, Deleter>::UniquePtr() noexcept : data(nullptr) {}
 
-template<typename  T>
-constexpr UniquePtr<T>::UniquePtr(std::nullptr_t) noexcept : data(nullptr) {}
+template<class  T, class Deleter>
+constexpr UniquePtr<T, Deleter>::UniquePtr(std::nullptr_t) noexcept : data(nullptr) {}
 
-template<typename  T>
-UniquePtr<T>::UniquePtr(T* data) noexcept : data(data) {}
+template<class  T, class Deleter>
+UniquePtr<T, Deleter>::UniquePtr(T* data, const Deleter& deleter) noexcept : data(data), deleter(deleter) {}
+
+template<class  T, class Deleter>
+UniquePtr<T, Deleter>::UniquePtr(UniquePtr&& other) noexcept : data(other.get()), deleter(other.get_deleter()) {}
 
 
-template<typename  T>
-UniquePtr<T>::~UniquePtr() {
+template<class  T, class Deleter>
+UniquePtr<T, Deleter>::~UniquePtr() {
   if (data != nullptr) {
-    delete data;
+    deleter(get());
   }
 }
 
 
-template<typename  T>
-UniquePtr<T>& UniquePtr<T>::operator=(UniquePtr<T>&& other) noexcept {
+template<class  T, class Deleter>
+UniquePtr<T, Deleter>& UniquePtr<T, Deleter>::operator=(std::nullptr_t) noexcept {
+  reset();
+  return *this;
+}
+
+template<class  T, class Deleter>
+UniquePtr<T, Deleter>& UniquePtr<T, Deleter>::operator=(UniquePtr<T, Deleter>&& other) noexcept {
   reset(other.release());
-  return *this;
-}
-
-template<typename  T>
-UniquePtr<T>& UniquePtr<T>::operator=(std::nullptr_t) noexcept {
-  reset(nullptr);
+  deleter = other.get_deleter();
   return *this;
 }
 
 
-template<typename  T>
-T* UniquePtr<T>::release() noexcept {
+template<class  T, class Deleter>
+T* UniquePtr<T, Deleter>::release() noexcept {
   T* copy = data;
   data = nullptr;
   return copy;
 }
 
-template<typename  T>
-void UniquePtr<T>::reset(T* ptr) noexcept {
+template<class  T, class Deleter>
+void UniquePtr<T, Deleter>::reset(T* ptr) noexcept {
   T* old_ptr = data;
   data = ptr;
   if(old_ptr) {
-    delete old_ptr;
+    deleter(old_ptr);
   }
 }
 
-template<typename  T>
-void UniquePtr<T>::swap(UniquePtr& other) noexcept {
+template<class  T, class Deleter>
+void UniquePtr<T, Deleter>::swap(UniquePtr& other) noexcept {
   UniquePtr copy;
   copy = std::move(*this);
   *this = std::move(other);
@@ -92,30 +102,40 @@ void UniquePtr<T>::swap(UniquePtr& other) noexcept {
 }
 
 
-template<typename  T>
-T* UniquePtr<T>::get() const noexcept {
+template<class  T, class Deleter>
+T* UniquePtr<T, Deleter>::get() const noexcept {
   return data;
 }
 
-template<typename  T>
-UniquePtr<T>::operator bool() const noexcept {
+template<class  T, class Deleter>
+Deleter& UniquePtr<T, Deleter>::get_deleter() noexcept {
+  return deleter;
+}
+
+template<class  T, class Deleter>
+const Deleter& UniquePtr<T, Deleter>::get_deleter() const noexcept {
+  return deleter;
+}
+
+template<class  T, class Deleter>
+UniquePtr<T, Deleter>::operator bool() const noexcept {
   return data;
 }
 
 
-template<typename  T>
-T& UniquePtr<T>::operator*() const noexcept {
+template<class  T, class Deleter>
+T& UniquePtr<T, Deleter>::operator*() const noexcept {
   return *data;
 }
 
-template<typename  T>
-T* UniquePtr<T>::operator->() const noexcept {
+template<class  T, class Deleter>
+T* UniquePtr<T, Deleter>::operator->() const noexcept {
   return data;
 }
 
 
-template<typename  T>
-T& UniquePtr<T>::operator[](std::size_t i) const {
+template<class  T, class Deleter>
+T& UniquePtr<T, Deleter>::operator[](std::size_t i) const {
   if (i < data.size()) {
     return data[i];
   } else {
