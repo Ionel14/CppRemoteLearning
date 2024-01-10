@@ -13,6 +13,5 @@ add_executable(
     sensors/soundsensor.cpp 
     sensors/temperaturesensor.cpp 
     devices/thermostatdevice.cpp 
-    devices/voicecontroldevice.cpp
-    myuniqueptr.cpp)
+    devices/voicecontroldevice.cpp)
 
