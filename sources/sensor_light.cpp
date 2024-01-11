@@ -6,7 +6,7 @@ SensorLight::SensorLight(const std::string& name, int value) : Sensor(name, valu
   type = "Light";
 }
 
-void SensorLight::printPurpose() {
+void SensorLight::printPurpose() const {
   std::cout << "This sensor checks whether a room is lit up\n";
 }
 

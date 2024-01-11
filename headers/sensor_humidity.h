@@ -11,7 +11,7 @@ class SensorHumidity : public Sensor {
 public:
   SensorHumidity(const std::string& name, int value);
 
-  void printPurpose();
+  void printPurpose() const;
 };
 
 } // namespace smarthome

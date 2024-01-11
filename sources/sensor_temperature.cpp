@@ -6,7 +6,7 @@ SensorTemperature::SensorTemperature(const std::string& name, int value) : Senso
   type = "Temperature";
 }
 
-void SensorTemperature::printPurpose() {
+void SensorTemperature::printPurpose() const {
   std::cout << "This sensor measures the temperature in a room\n";
 }
 

@@ -11,7 +11,7 @@ DeviceFan::DeviceFan(const std::string& name, bool state, const std::vector<Sens
   type = "Fan";
 }
 
-void DeviceFan::printPurpose() {
+void DeviceFan::printPurpose() const {
   std::cout << "This device controls the air circulation in a room\n";
 }
 

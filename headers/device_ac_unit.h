@@ -13,7 +13,7 @@ public:
   DeviceAcUnit(const std::string& name, bool state);
   DeviceAcUnit(const std::string& name, bool state, const std::vector<Sensor*>& sensors);
 
-  void printPurpose();
+  void printPurpose() const;
 };
 
 } // namespace smarthome

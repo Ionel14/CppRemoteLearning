@@ -11,7 +11,7 @@ class SensorLight : public Sensor {
 public:
   SensorLight(const std::string& name, int value);
 
-  void printPurpose();
+  void printPurpose() const;
 };
 
 } // namespace smarthome

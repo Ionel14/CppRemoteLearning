@@ -13,7 +13,7 @@ public:
   SmartHome() = default;
   SmartHome(const std::vector<Room>& rooms);
 
-  std::vector<Room> getRooms();
+  std::vector<Room> getRooms() const;
 
   void addRoom(const Room& room);
 

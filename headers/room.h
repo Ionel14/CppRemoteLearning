@@ -16,8 +16,8 @@ public:
   Room(const std::string& name);
   Room(const std::string& name, const std::vector<Device*>& devices);
 
-  std::string getName();
-  std::vector<Device*> getDevices();
+  std::string getName() const;
+  std::vector<Device*> getDevices() const;
 
   void addDevice(Device* device);
 
