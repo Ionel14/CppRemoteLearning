@@ -3,16 +3,19 @@
 
 #include <cstddef>
 #include <utility>
+#include <memory>
 
 namespace smartHome{
-    template <typename T>
+    template <typename T, typename Deleter = std::default_delete<T>>
     class MyUniquePtr {
     private:
         T* ptr;
+        Deleter deleter; // Instance of the deleter
 
     public:
-        // Constructor
-        explicit MyUniquePtr(T* p);
+        // Constructors
+        explicit MyUniquePtr(T* p = nullptr, const Deleter& d = Deleter());
+        explicit MyUniquePtr(T* p, Deleter&& d);
 
         // Destructor
         ~MyUniquePtr();
@@ -49,84 +52,90 @@ namespace smartHome{
         explicit operator bool() const;
 
         // Array version: provides indexed access to the managed array
-        T& operator[](std::size_t index) const;
-        
+        T& MyUniquePtr<T, Deleter>::operator[](std::size_t index) const 
     };
-    template <typename T>
-    MyUniquePtr<T>::MyUniquePtr(T* p) : ptr(p) {}
-    
+
+    // Constructors
+    template <typename T, typename Deleter>
+    MyUniquePtr<T, Deleter>::MyUniquePtr(T* p, const Deleter& d) : ptr(p), deleter(d) {}
+
+    template <typename T, typename Deleter>
+    MyUniquePtr<T, Deleter>::MyUniquePtr(T* p, Deleter&& d) : ptr(p), deleter(std::move(d)) {}
+
     // Destructor
-    template <typename T>
-    MyUniquePtr<T>::~MyUniquePtr() {
-        delete ptr;
+    template <typename T, typename Deleter>
+    MyUniquePtr<T, Deleter>::~MyUniquePtr() {
+        deleter(ptr);
     }
 
     // Move constructor
-    template <typename T>
-    MyUniquePtr<T>::MyUniquePtr(MyUniquePtr&& other) noexcept {
-        ptr = other.ptr;
+    template <typename T, typename Deleter>
+    MyUniquePtr<T, Deleter>::MyUniquePtr(MyUniquePtr&& other) noexcept : ptr(other.ptr), deleter(std::move(other.deleter)) {
         other.ptr = nullptr;
     }
 
     // Move assignment operator
-    template <typename T>
-    MyUniquePtr<T>& MyUniquePtr<T>::operator=(MyUniquePtr&& other) noexcept {
+    template <typename T, typename Deleter>
+    MyUniquePtr<T, Deleter>& MyUniquePtr<T, Deleter>::operator=(MyUniquePtr&& other) noexcept {
         if (this != &other) {
-            delete ptr;
+            deleter(ptr);
             ptr = other.ptr;
+            deleter = std::move(other.deleter);
             other.ptr = nullptr;
         }
         return *this;
     }
 
     // Overload dereference operator
-    template <typename T>
-    T& MyUniquePtr<T>::operator*() const {
+    template <typename T, typename Deleter>
+    T& MyUniquePtr<T, Deleter>::operator*() const {
         return *ptr;
     }
 
     // Overload arrow operator
-    template <typename T>
-    T* MyUniquePtr<T>::operator->() const {
+    template <typename T, typename Deleter>
+    T* MyUniquePtr<T, Deleter>::operator->() const {
         return ptr;
     }
 
     // Get the raw pointer
-    template <typename T>
-    T* MyUniquePtr<T>::get() const {
+    template <typename T, typename Deleter>
+    T* MyUniquePtr<T, Deleter>::get() const {
         return ptr;
     }
 
     // Release ownership of the pointer
-    template <typename T>
-    T* MyUniquePtr<T>::release() {
+    template <typename T, typename Deleter>
+    T* MyUniquePtr<T, Deleter>::release() {
         T* temp = ptr;
         ptr = nullptr;
         return temp;
     }
 
     // Reset the pointer
-    template <typename T>
-    void MyUniquePtr<T>::reset(T* p) {
-        delete ptr;
+    template <typename T, typename Deleter>
+    void MyUniquePtr<T, Deleter>::reset(T* p) {
+        deleter(ptr);
         ptr = p;
     }
 
     // Swap pointers
-    template <typename T>
-    void MyUniquePtr<T>::swap(MyUniquePtr& other) noexcept {
+    template <typename T, typename Deleter>
+    void MyUniquePtr<T, Deleter>::swap(MyUniquePtr& other) noexcept {
         std::swap(ptr, other.ptr);
+        std::swap(deleter, other.deleter);
     }
 
     // Check if there is an associated managed object
-    template <typename T>
-    MyUniquePtr<T>::operator bool() const {
+    template <typename T, typename Deleter>
+    MyUniquePtr<T, Deleter>::operator bool() const {
         return ptr != nullptr;
     }
 
+
     // Array version: provides indexed access to the managed array
-    template <typename T>
-    T& MyUniquePtr<T>::operator[](std::size_t index) const {
+    template <typename T, typename Deleter>
+    T& MyUniquePtr<T, Deleter>::operator[](std::size_t index) const {
         return ptr[index];
     }
 }
