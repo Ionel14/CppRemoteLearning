@@ -1,18 +1,12 @@
 #include <iostream>
-#include "user/User.h"
+#include "pointers/unique_ptr.h"
 
 int main() {
-    srand(static_cast<unsigned>(time(nullptr)));
-    smart_home::User user(3);
-    user.getUserHouse().writeDataToFile();
-    std::cout << "Demo Control Devices\n";
-    user.controlDevicesDemo();
-    std::cout << std::endl;
-    std::cout << "Demo Read Sensor Data From Room\n";
-    user.readSensorDataFromRoomDemo();
-    std::cout << std::endl;
-    std::cout << "Demo Get Devices Status\n";
-    user.getDevicesStatus();
+    std::cout << "Demo Unique Pointer\n";
+    my_unique_ptr::unique_ptr<int> singlePtr(new int(42));
+    std::cout << "singlePtr points to: " << *singlePtr << std::endl;
 
+    singlePtr.reset(new int(55));
+    std::cout << "singlePtr now points to: " << *singlePtr << std::endl;
     return 0;
 }

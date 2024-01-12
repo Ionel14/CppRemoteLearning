@@ -31,4 +31,5 @@ add_executable(
         sensors/HumiditySensor.h
         sensors/MonoxidSensor.cc
         sensors/MonoxidSensor.h
+        pointers/unique_ptr.h
 )

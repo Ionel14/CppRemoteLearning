@@ -6,64 +6,9 @@
 
 namespace smart_home {
      User::User(int numRooms) : userHouse(numRooms) {
-        devices.push_back(new Light());
-        devices.push_back(new Heater());
-        devices.push_back(new AirConditioner());
-    }
-
-    User::~User() {
-        for (auto device : devices) {
-            delete device;
-        }
-    }
-
-    User::User(const User& other) : userHouse(other.userHouse) {
-        copyDevices(other);
-    }
-
-    User::User(User&& other) noexcept : userHouse(std::move(other.userHouse)) {
-        moveDevices(other);
-    }
-
-    User& User::operator=(const User& other) {
-        if (this != &other) {
-            for (auto device : devices) {
-                delete device;
-            }
-            devices.clear();
-
-            userHouse = other.userHouse;
-
-            copyDevices(other);
-        }
-        return *this;
-    }
-
-    User& User::operator=(User&& other) noexcept {
-        if (this != &other) {
-            for (auto device : devices) {
-                delete device;
-            }
-            devices.clear();
-
-            userHouse = std::move(other.userHouse);
-
-            moveDevices(other);
-        }
-        return *this;
-    }
-
-
-    void User::copyDevices(const User& other) {
-        for (auto device : other.devices) {
-            devices.push_back(device->clone());
-        }
-    }
-
-    // Utility function for clearing and moving devices
-    void User::moveDevices(User& other) {
-        devices = std::move(other.devices);
-        other.devices.clear();
+        devices.push_back(std::make_unique<Light>());
+        devices.push_back(std::make_unique<Heater>());
+        devices.push_back(std::make_unique<AirConditioner>());
     }
 
     void User::controlDevicesDemo() {
@@ -74,7 +19,7 @@ namespace smart_home {
 
             switch(deviceType) {
                 case 0: {
-                    Light* light = dynamic_cast<Light*>(devices[deviceType]);
+                    auto* light = dynamic_cast<Light*>(devices[deviceType].get());
                     if (light) {
                         std::cout << "Enter brightness level (0-100): ";
                         int brightness;
@@ -84,7 +29,7 @@ namespace smart_home {
                     break;
                 }
                 case 1: {
-                    Heater* heater = dynamic_cast<Heater*>(devices[deviceType]);
+                    auto* heater = dynamic_cast<Heater*>(devices[deviceType].get());
                     if (heater) {
                         std::cout << "Enter temperature: ";
                         int temperature;
@@ -94,7 +39,7 @@ namespace smart_home {
                     break;
                 }
                 case 2: {
-                    AirConditioner* ac = dynamic_cast<AirConditioner*>(devices[deviceType]);
+                    auto* ac = dynamic_cast<AirConditioner*>(devices[deviceType].get());
                     if (ac) {
                         std::cout << "Enter temperature: ";
                         int temperature;
@@ -122,8 +67,14 @@ namespace smart_home {
         }
     }
 
+
     void User::getDevicesStatus() {
-        smart_home::StatusPrinter::printDeviceStatus(devices);
+        std::vector<Device*> rawDevicePointers;
+        rawDevicePointers.reserve(devices.size());
+        for (const auto& device : devices) {
+            rawDevicePointers.push_back(device.get());
+        }
+        smart_home::StatusPrinter::printDeviceStatus(rawDevicePointers);
     }
 
     void User::readSensorDataFromRoomDemo() {
@@ -140,7 +91,7 @@ namespace smart_home {
         }
     }
 
-    House User::getUserHouse() const {
+    House User::getUserHouse() {
         return House(3);
     }
 }

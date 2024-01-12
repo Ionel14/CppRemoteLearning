@@ -4,29 +4,35 @@
 #include <fstream>
 #include <vector>
 #include <ctime>
+#include <memory>
 #include "../house/House.h"
 #include "../devices/Device.h"
+#define NUM_ROOMS_IN_HOUSE 3
 
 namespace smart_home {
     class User {
     public:
-        explicit User(int numRooms);
-        ~User();
-        User(const User& other);
-        User(User&& other) noexcept;
-        User& operator=(const User& other);
-        User& operator=(User&& other) noexcept;
+        User(const User& other) = delete;
+        User& operator=(const User& other) = delete;
+        User(User&& other) = delete;
+        User& operator=(User&& other) = delete;
 
-        void readSensorDataFromRoomDemo();
+        static User& getInstance() {
+            static User instance(NUM_ROOMS_IN_HOUSE);
+            return instance;
+        }
+
+        static void readSensorDataFromRoomDemo();
         void controlDevicesDemo();
         void getDevicesStatus();
-        House getUserHouse() const;
+        static House getUserHouse();
+
     private:
-        std::vector<Device*> devices;
+        explicit User(int numRooms);
+        std::vector<std::unique_ptr<Device>> devices;
         smart_home::House userHouse;
         void copyDevices(const User& other);
         void moveDevices(User& other);
-    
     };
 }
 
