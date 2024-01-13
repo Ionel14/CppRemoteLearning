@@ -8,10 +8,6 @@
 namespace smartHome{
     template <typename T, typename Deleter = std::default_delete<T>>
     class MyUniquePtr {
-    private:
-        T* ptr;
-        Deleter deleter; // Instance of the deleter
-
     public:
         // Constructors
         explicit MyUniquePtr(T* p = nullptr, const Deleter& d = Deleter());
@@ -53,6 +49,10 @@ namespace smartHome{
 
         // Array version: provides indexed access to the managed array
         T& MyUniquePtr<T, Deleter>::operator[](std::size_t index) const 
+
+    private:
+        T* ptr;
+        Deleter deleter; // Instance of the deleter
     };
 
     // Constructors
