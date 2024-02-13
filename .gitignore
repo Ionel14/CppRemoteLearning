@@ -43,3 +43,6 @@ cmake_install.cmake
 CMakeCache.txt
 compile_commands.json
 Makefile
+
+# XML Files
+smart_home/resources/write_document.xml
