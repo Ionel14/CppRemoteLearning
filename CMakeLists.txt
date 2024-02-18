@@ -32,4 +32,5 @@ add_executable(
         sensors/MonoxidSensor.cc
         sensors/MonoxidSensor.h
         pointers/unique_ptr.h
+        marc_pop_unique_ptr/custom_unique_ptr.h
 )
