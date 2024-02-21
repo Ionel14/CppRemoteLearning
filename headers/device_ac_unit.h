@@ -11,7 +11,7 @@ namespace smarthome {
 class DeviceAcUnit : public Device {
 public:
   DeviceAcUnit(const std::string& name, bool state);
-  DeviceAcUnit(const std::string& name, bool state, const std::vector<Sensor*>& sensors);
+  DeviceAcUnit(const std::string& name, bool state, std::vector<UniquePointer<Sensor>>& sensors);
 
   void printPurpose() const;
 };

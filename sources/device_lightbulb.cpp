@@ -6,7 +6,7 @@ DeviceLightbulb::DeviceLightbulb(const std::string& name, bool state) : Device(n
   type = "Lightbulb";
 }
 
-DeviceLightbulb::DeviceLightbulb(const std::string& name, bool state, const std::vector<Sensor*>& sensors) : 
+DeviceLightbulb::DeviceLightbulb(const std::string& name, bool state, std::vector<UniquePointer<Sensor>>& sensors) : 
   Device(name, state, sensors) {
   type = "Lightbulb";
 }

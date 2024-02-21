@@ -1,11 +1,11 @@
 #ifndef SHA_UNIQUEPOINTER_H_
 #define SHA_UNIQUEPOINTER_H_
 
-#include "Deleter.h"
+#include "deleter.h"
 
 #include <memory>
 
-namespace up {
+namespace smarthome {
 
     template<typename T>
     class UniquePointer {
@@ -19,7 +19,9 @@ namespace up {
             UniquePointer(const UniquePointer&) = delete;
             UniquePointer& operator=(const UniquePointer&) = delete;
 
-            UniquePointer(UniquePointer&& other) : ptr_(std::move(other.ptr_)), del_(std::move(other.del_)) {};
+            UniquePointer(UniquePointer&& other) : ptr_(std::move(other.ptr_)), del_(std::move(other.del_)) { 
+                other.ptr_ = nullptr; 
+            };
 
             UniquePointer& operator=(UniquePointer&& other) {
                 if (this != &other) {
@@ -31,25 +33,32 @@ namespace up {
                 return *this;
             };
 
-            T* Get() {
+            T* get() {
                 return ptr_;
             };
 
-            Deleter<T> GetDeleter() {
+            Deleter<T>& get_deleter() {
                 return del_;
             };
 
-            T* Release() {
+            T* release() {
                 T* temp = ptr_;
                 ptr_ = nullptr;
                 return temp;
             };
 
-            void Reset(T* p = nullptr) {
+            void reset(T* p = nullptr) {
                 if (p != ptr_) {
                     del_(ptr_);
                     ptr_ = p;
                 }
+            }
+
+            void swap(UniquePointer& other) noexcept {
+                UniquePointer copy;
+                copy = std::move(*this);
+                *this = std::move(other);
+                other = std::move(copy);
             }
 
             operator bool () {
@@ -71,6 +80,6 @@ namespace up {
             T* ptr_ = nullptr;
             Deleter<T> del_;
     };
-} // namespace UniquePointer
+} // namespace smarthome
 
 #endif // SHA_UNIQUEPOINTER_H_

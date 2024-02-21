@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-namespace up
+namespace smarthome
 {
     template<typename T>
     class Deleter {
@@ -16,7 +16,7 @@ namespace up
                 return true;
             }
     };
-} // namespace up
+} // namespace smarthome
 
 
 #endif // SHA_DELETER_H_

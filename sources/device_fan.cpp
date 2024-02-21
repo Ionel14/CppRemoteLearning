@@ -6,7 +6,7 @@ DeviceFan::DeviceFan(const std::string& name, bool state) : Device(name, state) 
   type = "Fan";
 }
 
-DeviceFan::DeviceFan(const std::string& name, bool state, const std::vector<Sensor*>& sensors) : 
+DeviceFan::DeviceFan(const std::string& name, bool state, std::vector<UniquePointer<Sensor>>& sensors) : 
   Device(name, state, sensors) {
   type = "Fan";
 }

@@ -11,7 +11,7 @@ namespace smarthome {
 class SmartHomeManager {
 public:
   static SmartHome readDataFromFile(const std::string& filename);
-  static void writeDataToFile(const std::string& filename, SmartHome smarthome);
+  static void writeDataToFile(const std::string& filename, SmartHome& smarthome);
 
 private:
   static constexpr const char *resourses_directory = "resources/";

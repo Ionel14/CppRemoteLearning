@@ -11,7 +11,7 @@ namespace smarthome {
 class DeviceFan : public Device {
 public:
   DeviceFan(const std::string& name, bool state);
-  DeviceFan(const std::string& name, bool state, const std::vector<Sensor*>& sensors);
+  DeviceFan(const std::string& name, bool state, std::vector<UniquePointer<Sensor>>& sensors);
 
   void printPurpose() const;
 };

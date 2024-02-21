@@ -14,16 +14,16 @@ namespace smarthome {
 class Room {
 public:
   Room(const std::string& name);
-  Room(const std::string& name, const std::vector<Device*>& devices);
+  Room(const std::string& name, std::vector<UniquePointer<Device>>& devices);
 
   std::string getName() const;
-  std::vector<Device*> getDevices() const;
+  std::vector<UniquePointer<Device>>& getDevices();
 
-  void addDevice(Device* device);
+  void addDevice(UniquePointer<Device> device);
 
 private:
   std::string name;
-  std::vector<Device*> devices;
+  std::vector<UniquePointer<Device>> devices;
 };
 
 } // namespace smarthome

@@ -25,4 +25,6 @@ add_executable(smart_home
   headers/sensor_temperature.h
   headers/smart_home_manager.h
   headers/unique_ptr.h
+  headers/unique_ptr_colleague.h
+  headers/deleter.h
 )

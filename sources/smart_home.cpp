@@ -6,14 +6,18 @@
 
 namespace smarthome {
   
-SmartHome::SmartHome(const std::vector<Room>& rooms) : rooms(rooms) {}
+SmartHome::SmartHome(std::vector<UniquePointer<Room>>& rooms) {
+  for (auto& room : rooms) {
+    this->rooms.push_back(std::move(room));
+  }
+}
 
-std::vector<Room> SmartHome::getRooms() const {
+std::vector<UniquePointer<Room>>& SmartHome::getRooms() {
   return rooms;
 }
 
-void SmartHome::addRoom(const Room& room) {
-  rooms.push_back(room);
+void SmartHome::addRoom(UniquePointer<Room> room) {
+  rooms.push_back(std::move(room));
 }
 
 } // namespace smarthome

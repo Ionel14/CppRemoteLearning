@@ -11,17 +11,17 @@ namespace smarthome {
 class SmartHome {
 public:
   SmartHome() = default;
-  SmartHome(const std::vector<Room>& rooms);
+  SmartHome(std::vector<UniquePointer<Room>>& rooms);
 
-  std::vector<Room> getRooms() const;
+  std::vector<UniquePointer<Room>>& getRooms();
 
-  void addRoom(const Room& room);
+  void addRoom(UniquePointer<Room> room);
 
 private:
   // I'm using a vector, because it iterates through elements fast and it's easy to access an element. 
   // These are often used features because we need to be able to quickly choose a room or check every room.
   // It's slower at inserting/ removing elements, but a home's rooms/ devices/ sensors will not change that frequently.
-  std::vector<Room> rooms;
+  std::vector<UniquePointer<Room>> rooms;
 };
 
 } // namespace smarthome

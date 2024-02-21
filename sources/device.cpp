@@ -4,8 +4,12 @@ namespace smarthome {
   
 Device::Device(const std::string& name, bool state) : name(name), state(state) {}
 
-Device::Device(const std::string& name, bool state, const std::vector<Sensor*>& sensors) : 
-  name(name), state(state), sensors(sensors) {}
+Device::Device(const std::string& name, bool state, std::vector<UniquePointer<Sensor>>& sensors) : 
+  name(name), state(state) {
+    for (auto& sensor : sensors) {
+      this->sensors.push_back(std::move(sensor));
+    }
+}
 
 std::string Device::getName() const {
   return name;
@@ -15,7 +19,7 @@ bool Device::getState() const {
  return state;
 }
 
-std::vector<Sensor*> Device::getSensors() const {
+std::vector<UniquePointer<Sensor>>& Device::getSensors() {
   return sensors;
 }
 
@@ -27,8 +31,8 @@ void Device::setState(bool state) {
   this->state = state;
 }
 
-void Device::addSensor(Sensor* sensor){
-  sensors.push_back(sensor);
+void Device::addSensor(UniquePointer<Sensor> sensor){
+  sensors.push_back(std::move(sensor));
 }
 
 } // namespace smarthome
