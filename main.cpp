@@ -10,12 +10,17 @@ using namespace smarthome;
 
 void testSmartHome() {
   std::vector<UniquePointer<Sensor>> sensors1, sensors2, sensors3, sensors4;
-  sensors1.push_back(UniquePointer<Sensor> (new SensorTemperature("temperature1", 25)));
-  sensors1.push_back(UniquePointer<Sensor> (new SensorHumidity("humidity1", 30)));
-  sensors2.push_back(UniquePointer<Sensor> (new SensorLight("light1", 0)));
-  sensors3.push_back(UniquePointer<Sensor> (new SensorTemperature("temperature2", 20)));
-  sensors3.push_back(UniquePointer<Sensor> (new SensorHumidity("humidity2", 40)));
-  sensors4.push_back(UniquePointer<Sensor> (new SensorLight("light2", 1)));
+  try {
+    sensors1.push_back(UniquePointer<Sensor> (new SensorTemperature("temperature1", 25)));
+    sensors1.push_back(UniquePointer<Sensor> (new SensorHumidity("humidity1", 30)));
+    sensors2.push_back(UniquePointer<Sensor> (new SensorLight("light1", 0)));
+    sensors3.push_back(UniquePointer<Sensor> (new SensorTemperature("temperature2", 20)));
+    sensors3.push_back(UniquePointer<Sensor> (new SensorHumidity("humidity2", 40)));
+    sensors4.push_back(UniquePointer<Sensor> (new SensorLight("light2", 1)));
+  } catch (std::exception& e) {
+    std::cerr << e.what();
+    return;
+  }
 
   for(auto& sensor : sensors1) {
     sensor->printPurpose();
@@ -44,12 +49,73 @@ void testSmartHome() {
   
   SmartHome smartHome(rooms);
 
-  SmartHomeManager::writeDataToFile("data1.txt", smartHome);
+  try {
+    SmartHomeManager::writeDataToFile("data1.txt", smartHome);
 
-  SmartHome smartHome2;
-  smartHome2 = SmartHomeManager::readDataFromFile("data1.txt");
-  SmartHomeManager::writeDataToFile("data2.txt", smartHome2);
+    SmartHome smartHome2;
+    smartHome2 = SmartHomeManager::readDataFromFile("data1.txt");
+    SmartHomeManager::writeDataToFile("data2.txt", smartHome2);
+  } catch (std::exception& e) {
+    std::cerr << e.what();
+  }
 
+  std::cout << "\n\tTesting bad cases\n";
+
+  try {
+    UniquePointer<Sensor> test = new SensorTemperature("temperature_test", 225);
+  } catch (std::exception& e) {
+    std::cerr << e.what();
+  }
+
+  try {
+    SmartHomeManager::writeDataToFile("doesntexist/text.txt", smartHome);
+  } catch (std::exception& e) {
+    std::cerr << e.what();
+  }
+
+  try {
+    SmartHomeManager::readDataFromFile("doesntexist.txt");
+  } catch (std::exception& e) {
+    std::cerr << e.what();
+  }
+
+  try {
+    SmartHomeManager::readDataFromFile("nopermission.txt");
+  } catch (std::exception& e) {
+    std::cerr << e.what();
+  }
+
+  try {
+    SmartHome test;
+    test = SmartHomeManager::readDataFromFile("test1_1.txt");
+    SmartHomeManager::writeDataToFile("test1_2.txt", test);
+  } catch (std::exception& e) {
+    std::cerr << e.what();
+  }
+
+  try {
+    SmartHome test;
+    test = SmartHomeManager::readDataFromFile("test2_1.txt");
+    SmartHomeManager::writeDataToFile("test2_2.txt", test);
+  } catch (std::exception& e) {
+    std::cerr << e.what();
+  }
+
+  try {
+    SmartHome test;
+    test = SmartHomeManager::readDataFromFile("test3_1.txt");
+    SmartHomeManager::writeDataToFile("test3_2.txt", test);
+  } catch (std::exception& e) {
+    std::cerr << e.what();
+  }
+
+  try {
+    SmartHome test;
+    test = SmartHomeManager::readDataFromFile("test4_1.txt");
+    SmartHomeManager::writeDataToFile("test4_2.txt", test);
+  } catch (std::exception& e) {
+    std::cerr << e.what();
+  }
 }
 
 void testOperatorStar(const Room&) 

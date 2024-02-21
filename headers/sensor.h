@@ -19,6 +19,8 @@ public:
   std::string getName() const;
   int getValue() const;
   std::string getType() const;
+  int getMinValue() const;
+  int getMaxValue() const;
 
   void setValue(int value);
 
@@ -28,6 +30,7 @@ protected:
   std::string type;
   std::string name;
   int value;
+  int minValue, maxValue;
 };
 
 } // namespace smarthome
