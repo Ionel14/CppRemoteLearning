@@ -14,7 +14,7 @@ namespace smart_home {
         Sensor &operator=(Sensor &&other);
         virtual ~Sensor();
         const std::string &getName() const;
-        int getValue() const;
+        double getValue() const;
         MeasureUnit getUnit() const;
 
         virtual void generateRandomValue() = 0;

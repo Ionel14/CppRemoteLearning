@@ -7,6 +7,8 @@
 #include <memory>
 #include "../house/House.h"
 #include "../devices/Device.h"
+#include "../marc_pop_unique_ptr/custom_unique_ptr.h"
+
 #define NUM_ROOMS_IN_HOUSE 3
 
 namespace smart_home {
@@ -29,7 +31,8 @@ namespace smart_home {
 
     private:
         explicit User(int numRooms);
-        std::vector<std::unique_ptr<Device>> devices;
+        static const size_t NUM_DEVICES = 3;
+        std::vector<custom_memory::CustomUniquePtr<Device>> devices;
         smart_home::House userHouse;
         void copyDevices(const User& other);
         void moveDevices(User& other);

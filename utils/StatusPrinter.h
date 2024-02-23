@@ -8,7 +8,7 @@
 namespace smart_home {
     class StatusPrinter {
     public:
-        static void printDeviceStatus(const std::vector<Device*> &devices);
+        static void printDeviceStatus(const std::vector<const Device*> &devices);
         static void printSensorDataFromRoom(RoomType roomType);
     };
 }

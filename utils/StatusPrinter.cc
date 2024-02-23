@@ -2,7 +2,7 @@
 #include <fstream>
 
 namespace smart_home {
-    void StatusPrinter::printDeviceStatus(const std::vector<Device*> &devices) {
+    void StatusPrinter::printDeviceStatus(const std::vector<const Device*> &devices) {
         for (const auto &device : devices) {
             device->displayStatuses();
         }

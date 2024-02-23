@@ -1,3 +1,4 @@
+#include <iostream>
 #include "Room.h"
 
 namespace smart_home {
@@ -10,15 +11,30 @@ namespace smart_home {
     }
 
     void Room::addTemperatureSensor(const std::string& name) {
-        sensors.emplace_back(std::make_shared<TemperatureSensor>(name));
+        try {
+            sensors.emplace_back(std::make_shared<TemperatureSensor>(name));
+         } catch (const std::bad_alloc& e) {
+             std::cerr << "Failed to add temperature sensor due to memory allocation error: " << e.what() << std::endl;
+             exit(1);
+         }
     }
 
     void Room::addHumiditySensor(const std::string& name) {
-        sensors.emplace_back(std::make_shared<HumiditySensor>(name));
+        try {
+            sensors.emplace_back(std::make_shared<HumiditySensor>(name));
+        } catch (const std::bad_alloc& e) {
+            std::cerr << "Failed to add humidity sensor due to memory allocation error: " << e.what() << std::endl;
+            exit(1);
+        }
     }
 
     void Room::addMonoxideSensor(const std::string& name) {
-        sensors.emplace_back(std::make_shared<MonoxideSensor>(name));
+        try {
+            sensors.emplace_back(std::make_shared<MonoxideSensor>(name));
+        } catch (const std::bad_alloc& e) {
+            std::cerr << "Failed to add monoxide sensor due to memory allocation error: " << e.what() << std::endl;
+            exit(1);
+        }
     }
 
     void Room::generateRandomSensorValues() {

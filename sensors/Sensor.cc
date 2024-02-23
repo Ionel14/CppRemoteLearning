@@ -42,7 +42,7 @@ namespace smart_home {
         return name;
     }
 
-    int Sensor::getValue() const {
+    double Sensor::getValue() const {
         return *value;
     }
 }

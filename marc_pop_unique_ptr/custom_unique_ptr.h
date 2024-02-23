@@ -2,9 +2,10 @@
 #define NAGARROREMOTELEARNING_CUSTOM_UNIQUE_PTR_H
 
 #include <memory>
+#include <utility>
 
 namespace custom_memory {
-    template <typename T, typename Deleter = std::default_delete<T>>
+    template <typename T,  typename Deleter = std::default_delete<T>>
     class CustomUniquePtr {
     public:
         CustomUniquePtr(T* pointer, Deleter deleter = Deleter()): pointer_(pointer), deleter_(deleter) {}
@@ -13,9 +14,9 @@ namespace custom_memory {
 
         CustomUniquePtr& operator=(const CustomUniquePtr& other) = delete;
 
-        CustomUniquePtr(const CustomUniquePtr&& other);
+        CustomUniquePtr(CustomUniquePtr&& other);
 
-        CustomUniquePtr& operator=(const CustomUniquePtr&& other);
+        CustomUniquePtr& operator=(CustomUniquePtr&& other) noexcept;
 
         ~CustomUniquePtr() {
             deleter_(pointer_);
@@ -45,6 +46,10 @@ namespace custom_memory {
             return pointer_;
         }
 
+        inline const T* Get() const {
+            return pointer_;
+        }
+
         inline Deleter& GetDeleter() {
             return deleter_;
         }
@@ -59,25 +64,25 @@ namespace custom_memory {
 
         void Reset(T* newPointer = nullptr);
 
+        // this template constructor allows us to create a unique pointer from a derived class, used in the project
+        // to add to an STL vector of unique pointers of Device type (base class) from a derived class (Light, Heater, AirConditioner)
+        template<typename U, typename E>
+        CustomUniquePtr(CustomUniquePtr<U, E>&& other)
+            : pointer_(static_cast<T*>(other.Release())),
+              deleter_(std::forward<E>(other.GetDeleter())) {
+            static_assert(std::is_convertible<U*, T*>::value, "U* must be convertible to T*");
+        }
+
     private:
         T* pointer_;
         Deleter deleter_;
     };
 
     template <typename T, typename Deleter>
-    CustomUniquePtr<T, Deleter>::CustomUniquePtr(const CustomUniquePtr&& other): pointer_(std::move(other.pointer_)), deleter_(std::move(other.deleter_)) {
+    CustomUniquePtr<T, Deleter>::CustomUniquePtr(CustomUniquePtr&& other): pointer_(std::move(other.pointer_)), deleter_(std::move(other.deleter_)) {
         other.pointer_ = nullptr;
     }
 
-    template <typename T, typename Deleter>
-    CustomUniquePtr<T, Deleter>& CustomUniquePtr<T, Deleter>::operator=(const CustomUniquePtr&& other) {
-        if (this != &other) {
-            this->Reset(other.Release());
-            deleter_ = std::move(other.deleter_);
-        }
-
-        return *this;
-    }
 
     template <typename T, typename Deleter>
     T* CustomUniquePtr<T, Deleter>::Release() {
@@ -107,6 +112,11 @@ namespace custom_memory {
             }
             pointer_ = newPointer;
         }
+    }
+
+    template <typename T, typename... Args>
+    CustomUniquePtr<T> MakeCustomUnique(Args&&... args) {
+        return CustomUniquePtr<T>(new T(std::forward<Args>(args)...));
     }
 }
 
