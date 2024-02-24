@@ -71,6 +71,7 @@ namespace smartHome{
                 while (file >> sensorType >>sensorId >> sensorValue >> sensorFunctional) {
                     // Create appropriate Sensor object based on type
                     MyUniquePtr<Sensor> newSensor = createSensor(sensorType, sensorId, sensorValue, sensorFunctional);
+
                     sensors.push_back(newSensor.release());
 
                     char nextChar;
@@ -82,6 +83,7 @@ namespace smartHome{
 
                 // Create appropriate Device object based on type
                 UniquePtr<Device> newDevice = createDevice(deviceType, deviceId, deviceStatus, sensors);
+
                 devices.push_back(newDevice.release());
 
                 char nextChar;
