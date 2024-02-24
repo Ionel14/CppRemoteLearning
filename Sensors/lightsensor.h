@@ -10,6 +10,7 @@ class LightSensor : public Sensor
 {
 public:
     LightSensor(const std::string &name = "", float intensity = 0);
+    LightSensor(tinyxml2::XMLElement *sensorElement);
     float GetIntensity();
     void SetIntensity(float intensity);
 

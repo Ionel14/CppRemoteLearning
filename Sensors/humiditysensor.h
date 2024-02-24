@@ -10,6 +10,7 @@ class HumiditySensor: public Sensor
 {
 public:
     HumiditySensor(const std::string &name = "", float humidity = 0);
+    HumiditySensor(tinyxml2::XMLElement *sensorElement);
     float GetHumidity();
     void SetHumidity(float humidity);
 

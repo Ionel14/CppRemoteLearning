@@ -11,6 +11,7 @@ class AcUnit : public Device
 {
 public:
     AcUnit(const std::string &name = "", DeviceStatus status = DeviceStatus::kOff, AcMode mode = AcMode::kCold);
+    AcUnit(tinyxml2::XMLElement *deviceElement);
     AcMode GetMode();
     void SwitchMode();
     const std::string Status() override;

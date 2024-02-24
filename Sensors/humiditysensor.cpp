@@ -5,6 +5,11 @@ namespace smart_home
     
 HumiditySensor::HumiditySensor(const std::string &name, float humidity) : Sensor(name), humidity_{humidity} {}
 
+HumiditySensor::HumiditySensor(tinyxml2::XMLElement *sensorElement): Sensor(sensorElement)
+{
+    humidity_ = GetAFloatValue(sensorElement, "humidity");
+}
+
 float HumiditySensor::GetHumidity()
 {
     return humidity_;

@@ -9,7 +9,7 @@ class TemperatureSensor : public Sensor
 {
 public:
     TemperatureSensor(const std::string &name = "", float temperature = 0);
-
+    TemperatureSensor(tinyxml2::XMLElement *sensorElement);
     float GetTemperature();
     void SetTemperature(float temperature);
 

@@ -5,6 +5,11 @@ namespace smart_home
 
 LightSensor::LightSensor(const std::string &name, float intensity): Sensor(name), intensity_{intensity} {}
 
+LightSensor::LightSensor(tinyxml2::XMLElement *sensorElement): Sensor(sensorElement)
+{
+    intensity_ = GetAFloatValue(sensorElement, "intensity");
+}
+
 float LightSensor::GetIntensity()
 {
     return intensity_;

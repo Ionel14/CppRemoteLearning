@@ -1,0 +1,5 @@
+<SmartHome>
+    <Room name="LivingRoom">
+        <HumiditySensor humidity="10"/>
+    </Room>
+</SmartHome>

@@ -4,6 +4,8 @@
 #include <iostream>
 
 #include "smart_home.h"
+#include "andreea_unique_ptr"
+
 namespace smart_home
 {
 
@@ -11,7 +13,7 @@ namespace smart_home
 class SmartHomeStatus
 {
 public:
-    static void PrintSensorsStatus(std::vector<StatusObject*> &objects);
+    static void PrintStatus(const std::vector<StatusObject*> &objects);
 
 };
     

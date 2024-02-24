@@ -5,6 +5,10 @@ namespace smart_home
 
 TemperatureSensor::TemperatureSensor(const std::string &name, float temperature) : Sensor(name), temperature_{temperature} {};
 
+TemperatureSensor::TemperatureSensor(tinyxml2::XMLElement *sensorElement):  Sensor(sensorElement) {
+    temperature_ = GetAFloatValue(sensorElement, "temperature");
+}
+
 float TemperatureSensor::GetTemperature()
 {
     return temperature_;

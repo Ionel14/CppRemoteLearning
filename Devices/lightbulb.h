@@ -10,6 +10,7 @@ class LightBulb : public Device
 {
 public:
     LightBulb(const std::string &name = "", DeviceStatus status = DeviceStatus::kOff, std::string Color = "white");
+    LightBulb(tinyxml2::XMLElement *deviceElement);
     const std::string Status() override;
 private:
     std::string color_;

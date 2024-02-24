@@ -10,7 +10,7 @@ class PresenceSensor : public Sensor
 {
 public:
     PresenceSensor(const std::string &name = "", bool is_presence = "");
-
+    PresenceSensor(tinyxml2::XMLElement *sensorElement);
     bool GetIsPresence(); 
     void SetIsPresence(bool is_presence);
 

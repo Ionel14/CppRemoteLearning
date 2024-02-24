@@ -5,7 +5,7 @@ namespace smart_home
 
 Room::Room(const std::string &name): name_{name} {}
 
-void Room::AddSensor(std::unique_ptr<Sensor> &sensor)
+void Room::AddSensor(MyUniquePtr<Sensor> &&sensor)
 {
     sensors_.emplace_back(std::move(sensor));
 
@@ -24,7 +24,7 @@ void Room::DeleteSensor(const std::string &name)
     }
 }
 
-void Room::AddDevice(std::unique_ptr<Device> &device)
+void Room::AddDevice(MyUniquePtr<Device> &&device)
 {
     devices_.emplace_back(std::move(device));
 }
@@ -52,13 +52,23 @@ void Room::SetName(const std::string &name)
     name_ = name;
 }
 
-std::vector<std::unique_ptr<Sensor>>& Room::GetSensors()
+const std::vector<StatusObject*> Room::GetSensors()
 {
-    return sensors_;
+    std::vector<StatusObject*> rawPtrs;
+    for (MyUniquePtr<Sensor>& ptr : sensors_) {
+        rawPtrs.push_back(ptr.get());
+    }
+
+    return rawPtrs;
 }
 
-std::vector<std::unique_ptr<Device>>& Room::GetDevices()
+const std::vector<StatusObject*> Room::GetDevices()
 {
-    return devices_;
+    std::vector<StatusObject*> rawPtrs;
+    for (MyUniquePtr<Device>& ptr : devices_) {
+        rawPtrs.push_back(ptr.get());
+    }
+
+    return rawPtrs;
 }
 } // namespace smart_home

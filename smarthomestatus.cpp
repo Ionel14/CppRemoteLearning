@@ -2,7 +2,7 @@
 
 namespace smart_home
 {
-    void SmartHomeStatus::PrintSensorsStatus(std::vector<StatusObject*> &objects)
+    void SmartHomeStatus::PrintStatus(const std::vector<StatusObject*> &objects)
     {
         for (auto& object : objects)
         {

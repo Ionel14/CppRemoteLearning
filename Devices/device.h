@@ -3,6 +3,8 @@
 
 #include "devicestatus.h"
 #include "../statusobject.h"
+#include "../TinyXml/tinyxml2.h"
+#include <stdexcept>
 
 namespace smart_home {
 
@@ -10,7 +12,7 @@ class Device : public StatusObject
 {
 public:
     Device(const std::string &name = "", DeviceStatus status = DeviceStatus::kOff);
-
+    Device(tinyxml2::XMLElement *deviceElement);
     std::string& GetName();
     void SetName(const std::string &name);
 
