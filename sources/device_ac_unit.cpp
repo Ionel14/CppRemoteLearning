@@ -6,7 +6,7 @@ DeviceAcUnit::DeviceAcUnit(const std::string& name, bool state) : Device(name, s
   type = "AC";
 }
 
-DeviceAcUnit::DeviceAcUnit(const std::string& name, bool state, const std::vector<Sensor*>& sensors) : 
+DeviceAcUnit::DeviceAcUnit(const std::string& name, bool state, std::vector<UniquePointer<Sensor>>& sensors) : 
   Device(name, state, sensors) {
   type = "AC";
 }

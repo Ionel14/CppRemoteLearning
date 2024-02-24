@@ -4,19 +4,23 @@ namespace smarthome {
 
 Room::Room(const std::string& name) : name(name) {}
 
-Room::Room(const std::string& name, const std::vector<Device*>& devices) 
-  : name(name), devices(devices) {}
+Room::Room(const std::string& name, std::vector<UniquePointer<Device>>& devices) 
+  : name(name) {
+  for (auto& device : devices) {
+    this->devices.push_back(std::move(device));
+  }
+}
 
 std::string Room::getName() const {
   return name;
 }
 
-std::vector<Device*> Room::getDevices() const {
+std::vector<UniquePointer<Device>>& Room::getDevices() {
   return devices;
 }
 
-void Room::addDevice(Device* device){
-  devices.push_back(device);
+void Room::addDevice(UniquePointer<Device> device){
+  devices.push_back(std::move(device));
 }
 
 } // namespace smarthome

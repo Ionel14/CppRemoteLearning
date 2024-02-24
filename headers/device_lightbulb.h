@@ -11,7 +11,7 @@ namespace smarthome {
 class DeviceLightbulb : public Device {
 public:
   DeviceLightbulb(const std::string& name, bool state);
-  DeviceLightbulb(const std::string& name, bool state, const std::vector<Sensor*>& sensors);
+  DeviceLightbulb(const std::string& name, bool state, std::vector<UniquePointer<Sensor>>& sensors);
 
   void printPurpose() const;
 };
