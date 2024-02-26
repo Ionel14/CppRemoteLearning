@@ -48,7 +48,7 @@ namespace smartHome{
         explicit operator bool() const;
 
         // Array version: provides indexed access to the managed array
-        T& MyUniquePtr<T, Deleter>::operator[](std::size_t index) const 
+        T& operator[](std::size_t index) const;
 
     private:
         T* ptr;

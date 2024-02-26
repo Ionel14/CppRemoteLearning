@@ -6,7 +6,7 @@ namespace smartHome {
     const std::string VoiceControlDevice::keyword2 = "Shut down";
 
     VoiceControlDevice::VoiceControlDevice(const std::string& deviceId, bool status, const std::vector<Sensor*>& sensors)
-        : Device("Voice Control", deviceId, status, sensors) {}
+        : Device("VoiceControl", deviceId, status, sensors) {}
 
     void VoiceControlDevice::powerOn() {
         //exit methode if the device is already functioning

@@ -5,7 +5,7 @@
 #include <vector>
 #include <memory>
 
-namespace smarthome {
+namespace smartHome {
 
 template<class T, class Deleter = std::default_delete<T>>
 class UniquePtr {
