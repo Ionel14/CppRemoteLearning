@@ -34,6 +34,9 @@ void Fan::SetIsRotating(bool value) {
 }
 
 void Fan::SetOnAuto(sensors::Sensor* sensor) {
+    if (!sensor) {
+        return;
+    }
 
     if (std::any_cast<float>(sensor->GetData()) > 28) {
         SetIsOn(true);

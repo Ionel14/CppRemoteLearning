@@ -9,7 +9,7 @@ namespace sensors {
 
 class LightSensor : public Sensor {
   public:
-    LightSensor(rooms::Room* room): Sensor(room) {}
+    LightSensor(std::shared_ptr<rooms::Room> room): Sensor(room) {}
 
     inline std::any GetData() override {
         return light_level;

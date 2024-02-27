@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 #include "services/status_service.h"
 #include "sensors/temperature_sensor.h"
 #include "sensors/presence_sensor.h"
@@ -8,13 +9,13 @@
 namespace services {
 
 void StatusService::AddSensor(sensors::Sensor* sensor) {
-    if (sensor != nullptr) {
+    if (sensor) {
         sensors.push_back(sensor);
     }
 }
 
 void StatusService::AddDevice(devices::Device* device) {
-    if (device != nullptr) {
+    if (device) {
         devices.push_back(device);
     }
 }

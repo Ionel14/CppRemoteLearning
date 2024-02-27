@@ -9,7 +9,7 @@ namespace sensors {
 
 class PresenceSensor : public Sensor {
   public:
-    PresenceSensor(rooms::Room* room): Sensor(room) {}
+    PresenceSensor(std::shared_ptr<rooms::Room> room): Sensor(room) {}
 
     inline std::any GetData() override {
         return is_any_presence;

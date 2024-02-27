@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "rooms/room.h"
 
 namespace rooms {
@@ -16,6 +17,12 @@ Room& Room::operator=(Room&& other) {
         size = other.size;
     }
     return *this;
+}
+
+Room::Room(std::string name, const float size): name(name), size(size) {
+    if (name.empty()) {
+        throw std::runtime_error("Room name is empty.\n");
+    }
 }
 
 } // namespace rooms

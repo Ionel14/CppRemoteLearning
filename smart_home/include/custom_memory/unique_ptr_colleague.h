@@ -15,10 +15,10 @@ public:
     UniquePtr& operator=(const UniquePtr& ptr) = delete;
     UniquePtr& operator=(const UniquePtr&& ptr) noexcept
     {
-        if (this != ptr)
+        if (this != &ptr)
         {
-            ptr_.reset(ptr.release());
-            this.deleter_ = std::move(ptr->deleter_);
+            this->reset(ptr.release());
+            deleter_ = std::move(ptr.deleter_);
         }
 
         return *this;
@@ -32,7 +32,7 @@ public:
         return released;
     }
 
-    void reset( T* ptr = new T()) noexcept
+    void reset(T* ptr = new T()) noexcept
     {
         T* oldPtr = this->ptr_;
         this->ptr_= ptr;

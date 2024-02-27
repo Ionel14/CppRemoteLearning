@@ -3,6 +3,7 @@
 
 #include <any>
 #include "rooms/room.h"
+#include "memory"
 
 namespace sensors {
 
@@ -12,9 +13,9 @@ namespace sensors {
 
 class Sensor {
   public:
-    Sensor(rooms::Room* room): room(room) {}
+    Sensor(std::shared_ptr<rooms::Room> room);
 
-    inline rooms::Room* GetRoom() {
+    inline std::shared_ptr<rooms::Room> GetRoom() {
       return room;
     }
 
@@ -23,7 +24,7 @@ class Sensor {
     virtual void SetData(const std::any &data) = 0;
 
   protected:
-    rooms::Room* room = nullptr;
+    std::shared_ptr<rooms::Room> room;
 };
 
 } // namespace sensors

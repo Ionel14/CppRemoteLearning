@@ -4,7 +4,7 @@ project(smart_home)
 
 add_executable(smart_home src/main.cc src/rooms/room.cc src/services/temperature_service.cc src/services/presence_service.cc src/services/service.cc
 src/services/light_service.cc src/services/status_service.cc src/devices/ac_unit.cc src/devices/device.cc src/devices/fan.cc
-src/devices/light_bulb.cc)
+src/devices/light_bulb.cc src/sensors/sensor.cc)
 
 set(THIRD_PARTY_DIR ${CMAKE_BINARY_DIR}/third_party)
 

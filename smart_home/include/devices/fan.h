@@ -10,7 +10,7 @@ namespace devices {
 
 class Fan : public Device {
   public:
-    Fan(rooms::Room* room): Device(room) {}
+    Fan(std::shared_ptr<rooms::Room> room): Device(room) {}
 
     void SetIsOn(bool value) override;
 

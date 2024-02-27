@@ -9,7 +9,7 @@ namespace rooms {
 
 class Room {
   public:
-    Room(std::string name, const float size): name(name), size(size) {}
+    Room(std::string name, const float size);
 
     Room(const Room& other) : name(other.name), size(other.size) {}
 

@@ -10,7 +10,7 @@ namespace sensors {
 
 class TemperatureSensor : public Sensor {
   public:
-    TemperatureSensor(rooms::Room* room): Sensor(room) {}
+    TemperatureSensor(std::shared_ptr<rooms::Room> room): Sensor(room) {}
 
     inline std::any GetData() {
         return current_temperature;

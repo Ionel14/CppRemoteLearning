@@ -10,7 +10,7 @@ namespace devices {
 
 class AcUnit : public Device {
   public:
-    AcUnit(rooms::Room* room): Device(room) {}
+    AcUnit(std::shared_ptr<rooms::Room> room): Device(room) {}
 
     void SetIsOn(bool value) override;
 
