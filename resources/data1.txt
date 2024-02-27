@@ -11,3 +11,4 @@ Room: living_room
 Room: kitchen
 	Lightbulb Device: lightbulb2 off
 		Light Sensor: light2 1
+
