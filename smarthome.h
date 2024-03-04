@@ -11,6 +11,7 @@ public:
 
     const std::vector<Room>& getRooms() const;
 
+    void addRoom(Room room);
     void readDataFromFile(const std::string& filename);
     void writeDataToFile(const std::string& filename) const;
 
