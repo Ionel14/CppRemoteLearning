@@ -10,14 +10,26 @@
 #include <iostream>
 #include <memory>
 #include <iomanip>
+#include <thread>
+#include <chrono>
+#include <mutex>
+#include <atomic>
 
 
 namespace smartHome{
+    std::mutex gMutex;
+    std::atomic<bool> stopPrinting(false);
+
     SmartHome::SmartHome(const std::vector<Room>& rooms)
         : rooms(rooms) {}
 
     const std::vector<Room>& SmartHome::getRooms() const {
         return rooms;
+    }
+
+    void SmartHome::addRoom(Room room){
+        std::lock_guard<std::mutex> lock(gMutex);
+        rooms.push_back(room);
     }
 
     // Factory function
@@ -54,24 +66,20 @@ namespace smartHome{
             return;
         }
 
-        rooms.clear(); // We clean the vector before adding new elements
-
+        std::vector<Room> tempRooms; // Vector temporar pentru a evita modificarea rooms în timpul citirii
         std::string roomName, roomId, deviceType, deviceId, sensorType, sensorId, temp, temp1;
         double sensorValue;
         bool deviceStatus, sensorFunctional;
 
         while (file >> roomName >> roomId) {
             std::vector<Device*> devices;
-            devices.clear();
 
             while (file >> deviceType >> deviceId >> deviceStatus) {
                 std::vector<Sensor*> sensors;
-                sensors.clear();
 
                 while (file >> sensorType >>sensorId >> sensorValue >> sensorFunctional) {
                     // Create appropriate Sensor object based on type
                     MyUniquePtr<Sensor> newSensor = createSensor(sensorType, sensorId, sensorValue, sensorFunctional);
-
                     sensors.push_back(newSensor.release());
 
                     char nextChar;
@@ -83,7 +91,6 @@ namespace smartHome{
 
                 // Create appropriate Device object based on type
                 UniquePtr<Device> newDevice = createDevice(deviceType, deviceId, deviceStatus, sensors);
-
                 devices.push_back(newDevice.release());
 
                 char nextChar;
@@ -93,10 +100,16 @@ namespace smartHome{
                 }
             }
 
-            rooms.emplace_back(roomName, roomId, devices);
+            tempRooms.emplace_back(roomName, roomId, devices);
+        }
+
+        {
+            std::lock_guard<std::mutex> lock(gMutex);
+            rooms = std::move(tempRooms); 
         }
 
         file.close();
+
     }
 
     void SmartHome::writeDataToFile(const std::string& filename) const {
@@ -116,9 +129,9 @@ namespace smartHome{
                 file << devices[i]->getType() << " " << devices[i]->getId() << " " << devices[i]->getStatus() << "\n";
                 auto sizeSen = devices[i]->getSensors().size();
                 auto sensors = devices[i]->getSensors();
-                for (int i=0; i<sizeSen; i++) {
-                    file << sensors[i]->getType() << " " << sensors[i]->getID() << " " << std::fixed << std::setprecision(1) << sensors[i]->getValue() << " " << sensors[i]->getIsFunctional();
-                    if(i == sizeSen -1){
+                for (int j=0; j<sizeSen; j++) {
+                    file << sensors[j]->getType() << " " << sensors[j]->getID() << " " << std::fixed << std::setprecision(1) << sensors[j]->getValue() << " " << sensors[j]->getIsFunctional();
+                    if(j == sizeSen -1){
                         file << " ;\n" ;
                     }
                     else{
@@ -162,6 +175,18 @@ namespace smartHome{
             }
         }
     }
+
+    void printStatusPeriodically(SmartHome& home) {
+        while (!stopPrinting) {
+            {
+                std::lock_guard<std::mutex> lock(gMutex);
+                printStatus(home); // Call the existing printStatus function
+                std::cout << "\n";
+            }
+            // Wait for 30 seconds before printing again
+            std::this_thread::sleep_for(std::chrono::seconds(30));
+        }
+    }
 }
 
 int main(){
@@ -184,12 +209,11 @@ int main(){
     smartHome::UniquePtr<smartHome::Device> device2(new smartHome::SecurityDevice("D2", false, device2Sensors));
     smartHome::UniquePtr<smartHome::Device> device3(new smartHome::VoiceControlDevice("D3", true, device3Sensors));
     smartHome::UniquePtr<smartHome::Device> device4(new smartHome::ThermostatDevice("D4", true, device4Sensors));
-    smartHome::UniquePtr<smartHome::Device> device5(new smartHome::VoiceControlDevice("D5", false, std::vector<smartHome::Sensor*>()));
 
     // Create rooms
     std::vector<smartHome::Device*> room1Devices = {device1.get()};
     std::vector<smartHome::Device*> room2Devices = {device3.get(), device4.get()};
-    std::vector<smartHome::Device*> room3Devices = {device5.get()};
+    std::vector<smartHome::Device*> room3Devices = {device3.get()};
     std::vector<smartHome::Device*> room4Devices = {device2.get()};
 
     smartHome::Room room1("LivingRoom", "R1", room1Devices);
@@ -203,7 +227,39 @@ int main(){
     //const std::string filename = "home1.txt";
     smartHome::SmartHome home1({}); 
     home1.readDataFromFile(filename);
-    printStatus(home1);
-    //here we will be the actual usage of the aplication
+    // Start the printing service on a separate thread
+    std::thread printService(smartHome::printStatusPeriodically, std::ref(home1));
+
+    std::this_thread::sleep_for(std::chrono::minutes(1));
+    //new room
+    smartHome::UniquePtr<smartHome::Sensor> sensor7(new smartHome::TemperatureSensor("T3", 25.0, true));
+    smartHome::UniquePtr<smartHome::Sensor> sensor9(new smartHome::TemperatureSensor("T4", 15.0, false));
+    std::vector<smartHome::Sensor*> device6Sensors = {sensor7.get(), sensor9.get()};
+    smartHome::UniquePtr<smartHome::Device> device6(new smartHome::ThermostatDevice("D6", true, device6Sensors));
+    std::vector<smartHome::Device*> room5Devices = {device6.get()};
+    smartHome::Room room5("Room", "R5", room5Devices);
+    home1.addRoom(room5);
+
+    smartHome::UniquePtr<smartHome::Sensor> sensor8(new smartHome::MotionSensor("M3", 0.0, true));
+    std::vector<smartHome::Sensor*> device7Sensors = {sensor8.get()};
+    smartHome::UniquePtr<smartHome::Device> device7(new smartHome::SecurityDevice("D7", false, device7Sensors));
+    std::vector<smartHome::Device*> room6Devices = {device7.get()};
+    smartHome::Room room6("Bedroom", "R6", room6Devices);
+    home1.addRoom(room6);
+
+    std::this_thread::sleep_for(std::chrono::minutes(1));
+    smartHome::UniquePtr<smartHome::Sensor> sensor10(new smartHome::SoundSensor("S3", 70.0, true));
+    std::vector<smartHome::Sensor*> device8Sensors = {sensor10.get(), sensor5.get()};
+    smartHome::UniquePtr<smartHome::Device> device8(new smartHome::VoiceControlDevice("D8", true, device8Sensors));
+    std::vector<smartHome::Device*> room7Devices = {device8.get()};
+    smartHome::Room room7("Outside2", "R7", room7Devices);
+    home1.addRoom(room7);
+    
+    std::this_thread::sleep_for(std::chrono::minutes(1));
+    smartHome::stopPrinting = true;
+
+    // Join the printing service thread to avoid termination before it finishes
+    printService.join();
+    //printStatus(home1);
     return 0;
 }
