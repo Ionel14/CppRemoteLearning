@@ -25,7 +25,7 @@ public:
     // void AddToXml(const std::string &filename);
 
     std::vector<MyUniquePtr<Room>>& GetRooms();
-    std::optional<MyUniquePtr<Room>> GetRoom(const std::string &roomName);
+    std::optional<Room*> GetRoom(const std::string &roomName);
 
 private:
     // Sensor& getSensorFromXml(tinyxml2::XMLElement* sensorElement);

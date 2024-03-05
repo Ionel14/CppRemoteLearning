@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <memory>
-
+#include <optional>
 #include "Sensors/sensor.h"
 #include "Devices/device.h"
 #include "andreea_unique_ptr"
@@ -26,6 +26,9 @@ public:
 
     const std::vector<StatusObject*> GetSensors();
     const std::vector<StatusObject*> GetDevices();
+
+    const std::optional<Sensor*> GetSensor(const std::string& name);
+    const std::optional<Device*> GetDevice(const std::string& name);
 
 private:
     std::string name_;

@@ -71,4 +71,30 @@ const std::vector<StatusObject*> Room::GetDevices()
 
     return rawPtrs;
 }
+
+const std::optional<Sensor*> Room::GetSensor(const std::string &name)
+{
+    for (int i = 0; i < sensors_.size(); i++)
+    {
+        if (sensors_[i]->GetName() == name)
+        {
+            return sensors_[i].get();
+        }
+    }
+
+    return std::nullopt;
+}
+
+const std::optional<Device*> Room::GetDevice(const std::string &name)
+{
+    for (int i = 0; i < devices_.size(); i++)
+    {
+        if (devices_[i]->GetName() == name)
+        {
+            return devices_[i].get();
+        }
+    }
+
+    return std::nullopt;
+}
 } // namespace smart_home

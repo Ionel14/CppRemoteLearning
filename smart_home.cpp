@@ -106,13 +106,13 @@ std::vector<MyUniquePtr<Room>>& SmartHome::GetRooms()
     return rooms_;
 }
 
-std::optional<MyUniquePtr<Room>> SmartHome::GetRoom(const std::string &roomName)
+std::optional<Room*> SmartHome::GetRoom(const std::string &roomName)
 {
-    for (auto &room : rooms_)
+    for (MyUniquePtr<Room> &room : rooms_)
     {
         if (room->GetName() == roomName)
         {
-            return std::move(room);
+            return room.get();
         }
     }
     return std::nullopt;

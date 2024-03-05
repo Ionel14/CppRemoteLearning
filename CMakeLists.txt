@@ -7,7 +7,8 @@ Sensors/sensor.cpp Sensors/humiditysensor.cpp Sensors/lightsensor.cpp Sensors/pr
 Devices/device.cpp Devices/acunit.cpp Devices/door.cpp Devices/lightbulb.cpp
 room.cpp 
 smart_home.cpp 
-smarthomestatus.cpp 
+smarthomestatus.cpp
+smarthomemanager.cpp 
 uniqueptr.h
 TinyXml/tinyxml2.cpp)
 
