@@ -87,32 +87,6 @@ int main()
         std::cout << "Number of sensors of temperature service: " << temperature_service->GetSensors().size() << std::endl;
         std::cout << "Number of devices of temperature service: " << temperature_service->GetDevices().size() << std::endl;
 
-        temperature_service->Refresh();
-
-        temperature_element = temperature_element->NextSiblingElement();
-        temperature = std::stof(temperature_element->GetText());
-        temperature_service->SetSensorData(bedroom.get(), temperature);
-
-        std::cout << "Current temperature after cooling: " << std::any_cast<float>(temperature_service->GetSensorData(bedroom.get())) << std::endl;
-        element = write_document.NewElement("Temperature");
-        element->SetText(std::to_string(std::any_cast<float>(temperature_service->GetSensorData(bedroom.get()))).c_str());
-        node->InsertEndChild(element);
-
-        temperature_service->Refresh();
-
-        // repeated code
-        // a wrapper method can be made in order to reduce duplicate code
-        temperature_element = temperature_element->NextSiblingElement();
-        temperature = std::stof(temperature_element->GetText());
-        temperature_service->SetSensorData(bedroom.get(), temperature);
-        element = write_document.NewElement("Temperature");
-        element->SetText(std::to_string(std::any_cast<float>(temperature_service->GetSensorData(bedroom.get()))).c_str());
-        node->InsertEndChild(element);
-
-        temperature_service->Refresh();
-
-        presence_service->Refresh();
-
         for (auto &sensor : temperature_service->GetSensors()) {
             status_service->AddSensor(sensor);
         }
@@ -129,7 +103,37 @@ int main()
             status_service->AddDevice(device);
         }
 
-        status_service->PrintStatus();
+        status_service->PrintStatusAsync(30);
+
+        temperature_service->Refresh();
+
+        temperature_element = temperature_element->NextSiblingElement();
+        temperature = std::stof(temperature_element->GetText());
+        temperature_service->SetSensorData(bedroom.get(), temperature);
+
+        std::cout << "Current temperature after cooling: " << std::any_cast<float>(temperature_service->GetSensorData(bedroom.get())) << std::endl;
+        element = write_document.NewElement("Temperature");
+        element->SetText(std::to_string(std::any_cast<float>(temperature_service->GetSensorData(bedroom.get()))).c_str());
+        node->InsertEndChild(element);
+
+        temperature_service->Refresh();
+
+        std::this_thread::sleep_for(std::chrono::minutes(1));
+
+        // repeated code
+        // a wrapper method can be made in order to reduce duplicate code
+        temperature_element = temperature_element->NextSiblingElement();
+        temperature = std::stof(temperature_element->GetText());
+        temperature_service->SetSensorData(bedroom.get(), temperature);
+        element = write_document.NewElement("Temperature");
+        element->SetText(std::to_string(std::any_cast<float>(temperature_service->GetSensorData(bedroom.get()))).c_str());
+        node->InsertEndChild(element);
+
+        temperature_service->Refresh();
+
+        presence_service->Refresh();
+
+        status_service->StopPrintStatusAsync();
 
         write_document.SaveFile("../resources/write_document.xml");
     }

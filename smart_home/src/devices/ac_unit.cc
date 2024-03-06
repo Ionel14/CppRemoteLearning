@@ -5,6 +5,7 @@
 namespace devices {
 
 void AcUnit::SetIsOn(bool value) {
+    std::lock_guard<std::mutex> data_lock(is_on_mutex);
     if (is_on != value) {
         std::cout << "Turning AC unit " << (value ? "on" : "off") << "..." << std::endl;
         is_on = value;

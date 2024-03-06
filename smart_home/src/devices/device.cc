@@ -6,6 +6,7 @@ namespace devices
 {
 
 void Device::SetIsOn(bool value) {
+    std::lock_guard<std::mutex> data_lock(is_on_mutex);
     if (is_on != value) {
         std::cout << "Turning device " << (value ? "on" : "off") << "..." << std::endl;
         is_on = value;

@@ -2,8 +2,9 @@
 #define SMART_HOME_SENSORS_SENSOR_H_
 
 #include <any>
+#include <memory>
+#include <mutex>
 #include "rooms/room.h"
-#include "memory"
 
 namespace sensors {
 
@@ -25,6 +26,7 @@ class Sensor {
 
   protected:
     std::shared_ptr<rooms::Room> room;
+    std::mutex data_mutex;
 };
 
 } // namespace sensors

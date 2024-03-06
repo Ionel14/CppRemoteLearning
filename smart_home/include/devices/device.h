@@ -1,6 +1,7 @@
 #ifndef SMART_HOME_DEVICES_DEVICE_H_
 #define SMART_HOME_DEVICES_DEVICE_H_
 
+#include <mutex>
 #include "rooms/room.h"
 #include "sensors/sensor.h"
 
@@ -14,6 +15,7 @@ class Device {
     Device(std::shared_ptr<rooms::Room> room);
 
     inline bool GetIsOn() {
+      std::lock_guard<std::mutex> data_lock(is_on_mutex);
       return is_on;
     }
 
@@ -28,6 +30,7 @@ class Device {
   protected:
     bool is_on = false;
     std::shared_ptr<rooms::Room> room;
+    std::mutex is_on_mutex;
 };
 
 } // namespace devices

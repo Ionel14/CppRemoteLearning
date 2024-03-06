@@ -13,10 +13,12 @@ class TemperatureSensor : public Sensor {
     TemperatureSensor(std::shared_ptr<rooms::Room> room): Sensor(room) {}
 
     inline std::any GetData() {
+        std::lock_guard<std::mutex> data_lock(data_mutex);
         return current_temperature;
     }
 
     inline void SetData(const std::any &data) {
+        std::lock_guard<std::mutex> data_lock(data_mutex);
         current_temperature = std::any_cast<float>(data);
     }
 

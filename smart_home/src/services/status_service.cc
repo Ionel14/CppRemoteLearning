@@ -1,5 +1,6 @@
 #include <iostream>
 #include <memory>
+#include <chrono>
 #include "services/status_service.h"
 #include "sensors/temperature_sensor.h"
 #include "sensors/presence_sensor.h"
@@ -39,6 +40,32 @@ void StatusService::PrintStatus() {
         std::cout << "Device room size and on/off status: " << device->GetRoom()->GetName() << ", " << (device->GetIsOn() ? "on" : "off") << "." 
         << std::endl;
     }
+}
+
+void StatusService::PrintStatusAsync(int seconds_interval) {
+    if (!status_printing_thread.joinable()) {
+        should_print_status = true;
+
+        status_printing_thread = std::thread([this, seconds_interval]() {
+            while(should_print_status) {
+                PrintStatus();
+
+                std::this_thread::sleep_for(std::chrono::seconds(seconds_interval));
+            }
+        });
+    }
+    else {
+        std::cout << "Status printing has already started." << std::endl;
+    }
+}
+
+void StatusService::StopPrintStatusAsync() {
+    std::cout << "Stopping status printing..." << std::endl;
+    should_print_status = false;
+    if (status_printing_thread.joinable()) {
+        status_printing_thread.join();
+    }
+    std::cout << "Status printing stopped!" << std::endl;
 }
 
 } // namespace services

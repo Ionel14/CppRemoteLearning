@@ -12,10 +12,12 @@ class LightSensor : public Sensor {
     LightSensor(std::shared_ptr<rooms::Room> room): Sensor(room) {}
 
     inline std::any GetData() override {
+        std::lock_guard<std::mutex> data_lock(data_mutex);
         return light_level;
     }
 
     inline void SetData(const std::any &data) override {
+        std::lock_guard<std::mutex> data_lock(data_mutex);
         light_level = std::any_cast<uint8_t>(data);
     }
 

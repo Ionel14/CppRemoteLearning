@@ -12,10 +12,12 @@ class PresenceSensor : public Sensor {
     PresenceSensor(std::shared_ptr<rooms::Room> room): Sensor(room) {}
 
     inline std::any GetData() override {
+        std::lock_guard<std::mutex> data_lock(data_mutex);
         return is_any_presence;
     }
 
     inline void SetData(const std::any &data) override {
+        std::lock_guard<std::mutex> data_lock(data_mutex);
         is_any_presence = std::any_cast<bool>(data);
     }
 
