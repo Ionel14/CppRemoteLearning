@@ -4,9 +4,68 @@
 #include "headers/unique_ptr_colleague.h"
 
 #include <fstream>
+#include <mutex>
+#include <thread>
 #include <vector>
 
 using namespace smarthome;
+
+std::mutex smartHomeMutex;
+
+void periodicallyPrintStatus(SmartHome& smartHome) {
+  SmartHomeManager::writeDataToFile("status.txt", smartHome);
+
+  while (true) {
+    std::this_thread::sleep_for(std::chrono::seconds(30));
+    smartHomeMutex.lock();
+    SmartHomeManager::writeDataToFile("status.txt", smartHome, true);
+    smartHomeMutex.unlock();
+  }
+}
+
+void testThreads() {
+  std::vector<UniquePointer<Sensor>> sensors1, sensors2, sensors3, sensors4;
+  try {
+    sensors1.push_back(UniquePointer<Sensor> (new SensorTemperature("temperature1", 25)));
+    sensors1.push_back(UniquePointer<Sensor> (new SensorHumidity("humidity1", 30)));
+    sensors2.push_back(UniquePointer<Sensor> (new SensorLight("light1", 0)));
+    sensors3.push_back(UniquePointer<Sensor> (new SensorTemperature("temperature2", 20)));
+    sensors3.push_back(UniquePointer<Sensor> (new SensorHumidity("humidity2", 40)));
+    sensors4.push_back(UniquePointer<Sensor> (new SensorLight("light2", 1)));
+  } catch (std::exception& e) {
+    std::cerr << e.what();
+    return;
+  }
+
+  std::vector<UniquePointer<Device>> devices1, devices2, devices3;
+  devices1.push_back(UniquePointer<Device> (new DeviceAcUnit("ac_unit1", 0, sensors1)));
+  devices1.push_back(UniquePointer<Device> (new DeviceLightbulb("lightbulb1", 1, sensors2)));
+  devices2.push_back(UniquePointer<Device> (new DeviceFan("fan1", 0, sensors3)));
+  devices3.push_back(UniquePointer<Device> (new DeviceLightbulb("lightbulb2", 0, sensors4)));
+
+  std::vector<UniquePointer<Room>> rooms;
+  rooms.push_back(UniquePointer<Room> (new Room("bedroom", devices1)));
+  
+  SmartHome smartHome(rooms);
+
+  try {
+    std::thread printingThread(&periodicallyPrintStatus, std::reference_wrapper<SmartHome> (smartHome));
+
+    std::this_thread::sleep_for(std::chrono::seconds(30));
+    smartHomeMutex.lock();
+    smartHome.addRoom(UniquePointer<Room> (new Room("living_room", devices2)));
+    smartHomeMutex.unlock();
+    
+    std::this_thread::sleep_for(std::chrono::seconds(40));
+    smartHomeMutex.lock();
+    smartHome.addRoom(UniquePointer<Room> (new Room("kitchen", devices3)));
+    smartHomeMutex.unlock();
+
+    printingThread.join();
+  } catch (std::exception& e) {
+    std::cerr << e.what();
+  }
+}
 
 void testSmartHome() {
   std::vector<UniquePointer<Sensor>> sensors1, sensors2, sensors3, sensors4;
@@ -172,7 +231,8 @@ void testUniquePtr() {
 }
 
 int main () {
-  testSmartHome();
+  testThreads();
+  // testSmartHome();
   // testUniquePtr();
 
   return 0;

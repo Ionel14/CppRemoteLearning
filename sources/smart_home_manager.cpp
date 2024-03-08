@@ -112,9 +112,10 @@ SmartHome SmartHomeManager::readDataFromFile(const std::string& filename) {
   return smarthome;
 }
 
-void SmartHomeManager::writeDataToFile(const std::string& filename, SmartHome& smarthome) {
+void SmartHomeManager::writeDataToFile(const std::string& filename, SmartHome& smarthome, bool append) {
   std::ofstream myFile;
-  myFile.open(resourses_directory + filename);
+  append ? myFile.open(resourses_directory + filename, std::ios_base::app) : 
+            myFile.open(resourses_directory + filename);
   
   if (!myFile) {
     throw std::invalid_argument("Couldn't create file \"" + filename + "\"\n");
@@ -137,6 +138,7 @@ void SmartHomeManager::writeDataToFile(const std::string& filename, SmartHome& s
       }
     }
   }
+  myFile << std::endl;
   myFile.close();
 }
 
