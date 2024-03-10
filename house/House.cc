@@ -27,6 +27,12 @@ namespace smart_home {
         }
     }
 
+    void House::regenerateSensorValue(){
+        for (const auto& room : rooms){
+            room.generateRandomSensorValues();
+        }
+    }
+
     void House::writeDataToFile() {
         std::ofstream outFile("house_data.txt");
         if (!outFile.is_open()) {

@@ -5,6 +5,7 @@
 #include <vector>
 #include <ctime>
 #include <memory>
+#include <mutex>
 #include "../house/House.h"
 #include "../devices/Device.h"
 #include "../marc_pop_unique_ptr/custom_unique_ptr.h"
@@ -28,8 +29,15 @@ namespace smart_home {
         void controlDevicesDemo();
         void getDevicesStatus();
         static House getUserHouse();
+        void demoPrintSensorDataFromLivingRoom();
+        void setLightOn();
+        void setHeaterOn();
 
+        std::mutex& getMutex() {
+            return userMutex;
+        };
     private:
+        std::mutex userMutex;
         explicit User(int numRooms);
         static const size_t NUM_DEVICES = 3;
         std::vector<custom_memory::CustomUniquePtr<Device>> devices;

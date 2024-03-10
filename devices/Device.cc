@@ -24,7 +24,7 @@ namespace smart_home {
     }
 
     void Device::setDeviceStatus(int status) {
-        if (status != 0 || status != 1){
+        if (status > 1 || status < 0){
             std::cout << "Cannot set this status, command ignored!" << std::endl;
             return; 
         }

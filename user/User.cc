@@ -84,6 +84,11 @@ namespace smart_home {
         }
     }
 
+    // for simplicity purpose, I chose to make a demo for the thread homework, to avoid complicating with room selection
+    void User::demoPrintSensorDataFromLivingRoom(){
+        StatusPrinter::printSensorDataFromRoom(RoomType::LIVING_ROOM);
+    }
+
     void User::getDevicesStatus() {
         std::vector<const Device*> rawDevicePointers;
         rawDevicePointers.reserve(devices.size());
@@ -91,6 +96,16 @@ namespace smart_home {
             rawDevicePointers.push_back(device.Get());
         }
         smart_home::StatusPrinter::printDeviceStatus(rawDevicePointers);
+    }
+
+    void User::setLightOn(){
+        auto* light = dynamic_cast<Light*>(devices[0].Get());
+        light->setDeviceStatus(1);
+    }
+
+    void User::setHeaterOn(){
+        auto* heater = dynamic_cast<Heater*>(devices[1].Get());
+        heater->setDeviceStatus(1);
     }
 
     void User::readSensorDataFromRoomDemo() {

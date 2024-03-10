@@ -37,7 +37,7 @@ namespace smart_home {
         }
     }
 
-    void Room::generateRandomSensorValues() {
+    void Room::generateRandomSensorValues() const {
         for (auto& sensor : sensors) {
             sensor->generateRandomValue();
         }

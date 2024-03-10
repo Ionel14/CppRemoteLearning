@@ -23,7 +23,7 @@ namespace smart_home {
         void addHumiditySensor(const std::string& name);
         void addMonoxideSensor(const std::string& name);
 
-        void generateRandomSensorValues();
+        void generateRandomSensorValues() const;
 
         const std::vector<std::shared_ptr<Sensor>>& getSensors() const;
 

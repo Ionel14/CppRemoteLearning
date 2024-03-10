@@ -1,9 +1,12 @@
 #include "TemperatureSensor.h"
 #include <cstdlib>
+#include <ctime>
 
 namespace smart_home {
     TemperatureSensor::TemperatureSensor(const std::string &name)
-            : Sensor(name, MeasureUnit::CELSIUS) {}
+            : Sensor(name, MeasureUnit::CELSIUS) {
+                std::srand(static_cast<unsigned>(std::time(nullptr)));
+            }
 
     void TemperatureSensor::generateRandomValue() {
         *value = std::rand() % 30 + 10;
