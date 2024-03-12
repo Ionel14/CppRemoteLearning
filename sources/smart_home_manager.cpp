@@ -142,4 +142,52 @@ void SmartHomeManager::writeDataToFile(const std::string& filename, SmartHome& s
   myFile.close();
 }
 
+std::string SmartHomeManager::getStatusHome(SmartHome& smarthome) {
+  std::string status;
+  for (auto& room : smarthome.getRooms()) {
+    status += "Room: " + room->getName() + "\n";
+
+    for (auto& device : room->getDevices()) {
+      std::string state;
+      if (device->getState()) {
+        state = "on";
+      } else {
+        state = "off";
+      }
+      status += "\t" + device->getType() + " Device: " + device->getName() + " " + state + "\n";
+
+      for (auto& sensor : device->getSensors()) {
+        status += "\t\t" + sensor->getType() + " Sensor: " + sensor->getName() + " " + std::to_string(sensor->getValue()) + "\n";
+      }
+    }
+  }
+  status += "\n";
+
+  return status;
+}
+
+std::string SmartHomeManager::getStatusRoom(SmartHome& smarthome, int index) {
+  std::string status;
+  auto& room = smarthome.getRooms()[index];
+
+  status += "Room: " + room->getName() + "\n";
+
+  for (auto& device : room->getDevices()) {
+    std::string state;
+    if (device->getState()) {
+      state = "on";
+    } else {
+      state = "off";
+    }
+    status += "\t" + device->getType() + " Device: " + device->getName() + " " + state + "\n";
+
+    for (auto& sensor : device->getSensors()) {
+      status += "\t\t" + sensor->getType() + " Sensor: " + sensor->getName() + " " + std::to_string(sensor->getValue()) + "\n";
+    }
+  }
+  status += "\n";
+
+  return status;
+}
+
 } // namespace smarthome

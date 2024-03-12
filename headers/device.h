@@ -26,6 +26,7 @@ public:
   void setState(bool state);
 
   void addSensor(UniquePointer<Sensor> sensor);
+  void removeSensor(int index);
 
   virtual void printPurpose() const = 0;
 

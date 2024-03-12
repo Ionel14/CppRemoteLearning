@@ -23,4 +23,12 @@ void Room::addDevice(UniquePointer<Device> device){
   devices.push_back(std::move(device));
 }
 
+void Room::removeDevice(int index) {
+  for (int i = 0; i < devices[index]->getSensors().size(); i++) {
+    devices[index]->removeSensor(i);
+  }
+  devices.erase(devices.begin() + index);
+}
+
+
 } // namespace smarthome

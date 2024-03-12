@@ -35,4 +35,8 @@ void Device::addSensor(UniquePointer<Sensor> sensor){
   sensors.push_back(std::move(sensor));
 }
 
+void Device::removeSensor(int index) {
+  sensors.erase(sensors.begin() + index);
+}
+
 } // namespace smarthome
