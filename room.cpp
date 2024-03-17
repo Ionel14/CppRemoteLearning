@@ -30,4 +30,18 @@ namespace smartHome{
     void Room::setDevices(const std::vector<Device*>& newDevices){
         devices = newDevices;
     }
+
+    void Room::addDevice(Device* device){
+        devices.push_back(device);
+    }
+
+    void Room::removeDevice(std::string deviceID){
+        for (auto it = devices.begin(); it != devices.end();) {
+            if ((*it)->getId() == deviceID) {
+                it = devices.erase(it);
+            } else {
+                ++it;
+            }
+        }
+    }
 }

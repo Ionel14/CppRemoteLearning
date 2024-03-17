@@ -37,4 +37,19 @@ namespace smartHome{
     void Device::setSensors(const std::vector<Sensor*>& newSensors){
         sensors = newSensors;
     }
+
+    void Device::addSensor(Sensor* sensor){
+        sensors.push_back(sensor);
+    }
+
+    void Device::removeSensor(std::string sensorID) {
+        for (auto it = sensors.begin(); it != sensors.end();) {
+            if ((*it)->getID() == sensorID) {
+                it = sensors.erase(it);
+            } else {
+                ++it;
+            }
+        }
+    }
+
 }

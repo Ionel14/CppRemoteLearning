@@ -20,6 +20,9 @@ namespace smartHome{
         void setName(const std::string& newName);
         void setDevices(const std::vector<Device*>& newDevices);
 
+        void addDevice(Device* device);
+        void removeDevice(std::string deviceID); 
+
     private:
         std::string name;
         const std::string roomId;
