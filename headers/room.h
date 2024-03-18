@@ -20,6 +20,7 @@ public:
   std::vector<UniquePointer<Device>>& getDevices();
 
   void addDevice(UniquePointer<Device> device);
+  void removeDevice(int index);
 
 private:
   std::string name;
