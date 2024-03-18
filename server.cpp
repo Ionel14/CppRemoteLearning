@@ -15,14 +15,20 @@
 
 using namespace smarthome;
 
+int newsockfd;
 
-void error(const char *msg) {
+void error(const char *msg, bool userError = false) {
     std::cerr << msg;
+    if (userError) {
+        if (write(newsockfd, msg, strlen(msg)) < 0) {
+            error("Error writing to socket");
+        }
+    }
     exit(1);
 }
 
-auto& writeRooms(SmartHome& smartHome, int newsockfd) {
-    std::string message;
+auto& writeRooms(SmartHome& smartHome) {
+    std::string message = "Rooms:\n";
     auto& rooms = smartHome.getRooms();
     for (int i = 0; i < rooms.size(); i++) {
         message += std::to_string(i + 1) + ". " + rooms[i]->getName() + "\n";
@@ -33,16 +39,33 @@ auto& writeRooms(SmartHome& smartHome, int newsockfd) {
     return rooms;
 }
 
-int readIndex(int newsockfd, char buffer[]) {
+void checkName(char buffer[]) {
+    std::string str = buffer;
+    if(str.find_first_not_of("qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890_-") != std::string::npos) {
+        error("Error wrong name", true);
+    }
+}
+
+void checkIndex(char buffer[], int min, int max) {
+    int index = strtol(buffer, nullptr, 10);
+    std::string str = buffer;
+    if ((str.find_first_not_of("0123456789") != std::string::npos || (buffer[0] == '0' && strlen(buffer) != 1)) ||
+        (index < min || index > max)) {
+        error("Error wrong index", true);
+    }
+}
+
+int readIndex(char buffer[], int min, int max) {
     bzero(buffer, 512);
     if (read(newsockfd, buffer, 512) < 0) {
         error("Error reading from socket");
     }
+    checkIndex(buffer, min, max);
     return strtol(buffer, nullptr, 10) - 1;
 }
 
-auto& writeDevices(UniquePointer<Room>& room, int newsockfd) {
-    std::string message;
+auto& writeDevices(UniquePointer<Room>& room) {
+    std::string message = "Devices:\n";
     auto& devices = room->getDevices();
     for (int i = 0; i < devices.size(); i++) {
         message += std::to_string(i + 1) + ". " + devices[i]->getName() + "\n";
@@ -53,8 +76,8 @@ auto& writeDevices(UniquePointer<Room>& room, int newsockfd) {
     return devices;
 }
 
-auto& writeSensor(UniquePointer<Device>& device, int newsockfd) {
-    std::string message;
+auto& writeSensor(UniquePointer<Device>& device) {
+    std::string message = "Sensors:\n";
     auto& sensors = device->getSensors();
     for (int i = 0; i < sensors.size(); i++) {
         message += std::to_string(i + 1) + ". " + sensors[i]->getName() + "\n";
@@ -65,7 +88,7 @@ auto& writeSensor(UniquePointer<Device>& device, int newsockfd) {
     return sensors;
 }
 
-void readNewData(int newsockfd, char buffer[], bool sendWrite = true) {
+void readNewData(char buffer[], bool sendWrite = true) {
     bzero(buffer, 512);
     if (read(newsockfd, buffer, 512) < 0) {
         error("Error reading from socket");
@@ -83,9 +106,10 @@ int main(int argc, char *argv[]) {
         smartHome = SmartHomeManager::readDataFromFile("test_client_server.txt");
     } catch (std::exception& e) {
         std::cerr << e.what();
+        exit(1);
     }
 
-    int sockfd, newsockfd, portno;
+    int sockfd, portno;
     socklen_t clilen;
     char buffer[512], buffer2[512];
     std::string message;
@@ -96,7 +120,12 @@ int main(int argc, char *argv[]) {
     if (sockfd < 0) error("Error opening socket");
 
     bzero((char *) &serv_addr, sizeof(serv_addr));
-    portno = argc == 2 ? atoi(argv[1]) : 3000;
+    if (argc == 2) {
+        checkIndex(argv[1], 2000, 65535);
+        portno = strtol(argv[1], nullptr, 10);
+    } else {
+        portno = 3000;
+    }
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
     serv_addr.sin_port = htons(portno);
@@ -108,30 +137,30 @@ int main(int argc, char *argv[]) {
     if (newsockfd < 0) error("Error on accept");
 
     // Read first input
-    readNewData(newsockfd, buffer, false);
+    readNewData(buffer, false);
 
     while (strcmp(buffer, "0") != 0) {
         // GET STATUS
         if (strcmp(buffer, "status room") == 0 || strcmp(buffer, "status device") == 0 || strcmp(buffer, "status sensor") == 0) {
             // Write rooms
-            auto& rooms = writeRooms(smartHome, newsockfd);
+            auto& rooms = writeRooms(smartHome);
 
             // Read room index
-            i1 = readIndex(newsockfd, buffer2);
+            i1 = readIndex(buffer2, 1, rooms.size());
 
             if (strcmp(buffer, "status sensor") == 0 || strcmp(buffer, "status device") == 0) {
                 // Write devices from room
-                auto& devices = writeDevices(rooms[i1], newsockfd);
+                auto& devices = writeDevices(rooms[i1]);
 
                 // Read device index
-                i1 = readIndex(newsockfd, buffer2);
+                i1 = readIndex(buffer2, 1, devices.size());
 
                 if (strcmp(buffer, "status sensor") == 0) {
                     // Write sensor from device
-                    auto& sensors = writeSensor(devices[i1], newsockfd);
+                    auto& sensors = writeSensor(devices[i1]);
 
                     // Read sensor index
-                    i1 = readIndex(newsockfd, buffer2);
+                    i1 = readIndex(buffer2, 1, sensors.size());
 
                     // Write status sensors
                     auto& sensor = sensors[i1];
@@ -159,45 +188,50 @@ int main(int argc, char *argv[]) {
             bool state;
             
             // Write rooms
-            auto& rooms = writeRooms(smartHome, newsockfd);
+            auto& rooms = writeRooms(smartHome);
 
             // Read room index
-            i1 = readIndex(newsockfd, buffer2);
+            i1 = readIndex(buffer2, 1, rooms.size());
 
             if (strcmp(buffer, "add sensor") == 0) {
                 // Write devices from room
-                auto& devices = writeDevices(rooms[i1], newsockfd);
+                auto& devices = writeDevices(rooms[i1]);
                 
                 // Read device index
-                i2 = readIndex(newsockfd, buffer2);
+                i2 = readIndex(buffer2, 1, devices.size());
                 bzero(buffer2, 512);
 
                 // Write sensor types
-                message = "1. Humidity\n2. Light\n3. Temperature\n\n";
+                message = "Sensor types:\n1. Humidity\n2. Light\n3. Temperature\n\n";
                 if (write(newsockfd, message.c_str(), message.size()) < 0) error("Error writing to socket");
 
                 // Read sensor type
-                readNewData(newsockfd, buffer2);
+                readNewData(buffer2);
+                checkIndex(buffer2, 1, 3);
                 type = strtol(buffer2, nullptr, 10);
 
                 // Read sensor name
-                readNewData(newsockfd, buffer2);
+                readNewData(buffer2);
+                checkName(buffer2);
                 name = buffer2;
 
                 // Read sensor value
-                readNewData(newsockfd, buffer2, false);
+                readNewData(buffer2, false);
                 value = strtol(buffer2, nullptr, 10);
 
                 // Add new sensor
                 UniquePointer<Sensor> sensor;
                 switch (type) {
                     case 1:
+                        checkIndex(buffer2, 0, 100);
                         sensor = UniquePointer<Sensor> (new SensorHumidity(name, value));
                         break;
                     case 2:
+                        checkIndex(buffer2, 0, 100);
                         sensor = UniquePointer<Sensor> (new SensorLight(name, value));
                         break;
                     case 3:
+                        checkIndex(buffer2, 0, 50);
                         sensor = UniquePointer<Sensor> (new SensorTemperature(name, value));
                         break;
                 }
@@ -206,20 +240,28 @@ int main(int argc, char *argv[]) {
                 if (write(newsockfd, "New sensor added successfully\n", 30) < 0) error("Error writing to socket");
             } else {
                 // Write device types
-                message = "1. AC unit\n2. Fan\n3. Lightbulb\n\n";
+                message = "Device types:\n1. AC unit\n2. Fan\n3. Lightbulb\n\n";
                 if (write(newsockfd, message.c_str(), message.size()) < 0) error("Error writing to socket");
 
                 // Read device type
-                readNewData(newsockfd, buffer2);
+                readNewData(buffer2);
+                checkIndex(buffer2, 1, 3);
                 type = strtol(buffer2, nullptr, 10);
 
                 // Read device name
-                readNewData(newsockfd, buffer2);
+                readNewData(buffer2);
+                checkName(buffer2);
                 name = buffer2;
 
                 // Read device state
-                readNewData(newsockfd, buffer2, false);
-                state = strcmp(buffer2, "on") == 0 ? true : false;
+                readNewData(buffer2, false);
+                if (strcmp(buffer2, "on") == 0) {
+                    state = true;
+                } else if(strcmp(buffer2, "off") == 0) {
+                    state = false;
+                } else {
+                    error("Error wrong state", true);
+                }
 
                 // Add new device
                 UniquePointer<Device> device;
@@ -242,23 +284,23 @@ int main(int argc, char *argv[]) {
         // REMOVE ENTITY
             int index1, index2;
             // Write rooms
-            auto& rooms = writeRooms(smartHome, newsockfd);
+            auto& rooms = writeRooms(smartHome);
             
             // Read room index
-            i1 = readIndex(newsockfd, buffer2);
+            i1 = readIndex(buffer2, 1, rooms.size());
 
             // Write devices from room
-            auto& devices = writeDevices(rooms[i1], newsockfd);
+            auto& devices = writeDevices(rooms[i1]);
 
             // Read device index
-            i2 = readIndex(newsockfd, buffer2);
+            i2 = readIndex(buffer2, 1, devices.size());
 
             if (strcmp(buffer, "remove sensor") == 0) {
                 // Write sensor from device
-                auto& sensors = writeSensor(devices[i2], newsockfd);
+                auto& sensors = writeSensor(devices[i2]);
 
                 // Read sensor index
-                readIndex(newsockfd, buffer2);
+                readIndex(buffer2, 1, sensors.size());
 
                 // Remove sensor
                 smartHome.getRooms()[i1]->getDevices()[i2]->removeSensor(strtol(buffer2, nullptr, 10) - 1);
@@ -271,8 +313,10 @@ int main(int argc, char *argv[]) {
                 if (write(newsockfd, "Successfully removed device", 27) < 0) error("Error writing to socket");
                 SmartHomeManager::writeDataToFile("test_client_server.txt", smartHome);
             }
+        } else {
+            error("Error wrong request", true);
         }
-        readNewData(newsockfd, buffer, false);
+        readNewData(buffer, false);
     }
     close(newsockfd);
     close(sockfd);

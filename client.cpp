@@ -27,11 +27,43 @@ void writeData(int sockfd, const char buffer[]) {
   }
 }
 
+int countOptions(char buffer[]) {
+  int n = 0;
+  for(int i = 0; i < strlen(buffer); i++) {
+    if(buffer[i] == '.') {
+      n++;
+    }
+  }
+  return n;
+}
+
+int readNumberInInterval(std::string message, int min, int max) {
+  std::string input;
+  std::cout << message;
+  getline(std::cin, input);
+  while((input.find_first_not_of("0123456789") != std::string::npos || (input[0] == '0' && input.size() != 1)) ||
+    (stoi(input) < min || stoi(input) > max)) {
+    std::cout << "\nIncorrect input. Please write a number between " << min << " and " << max << "\n\n" + message;
+    getline(std::cin, input);
+  }
+  return stoi(input);
+}
+
 void readAnswer(char buffer[], int& input) {
   printf("%s\n", buffer);
-  std::cout << "Answer: ";
-  std::cin >> input;
+  input = readNumberInInterval("Answer: ", 1, countOptions(buffer));
   std::cout << std::endl;
+}
+
+std::string readStringName(std::string message) {
+  std::string input;
+  std::cout << message;
+  getline(std::cin, input);
+  while(input.find_first_not_of("qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890_-") != std::string::npos) {
+    std::cout << "\nIncorrect input. Please write a name consisting of only letters, numbers, \"_\" or \"-\"\n\n" << message;
+    getline(std::cin, input);
+  }
+  return input;
 }
 
 
@@ -45,7 +77,16 @@ int main(int argc, char *argv[]) {
   int input, input2;
   std::string inputStr, inputStr2;
 
-  portno = argc == 2 ? atoi(argv[1]) : 3000;
+  if (argc == 2) {
+    portno = strtol(argv[1], nullptr, 10);
+    std::string str = argv[1];
+      if ((str.find_first_not_of("0123456789") != std::string::npos || (buffer[0] == '0' && strlen(buffer) != 1)) ||
+          (portno < 2000 || portno > 65535)) {
+          error("Error wrong port number");
+      }
+  } else {
+    portno = 3000;
+  }
   sockfd = socket(AF_INET, SOCK_STREAM, 0);
   if (sockfd < 0) 
     error("Error opening socket");
@@ -60,15 +101,15 @@ int main(int argc, char *argv[]) {
     error("Error connecting");
 
 
-  std::cout << "0.Exit\n1. Get status\n2. Add new entity\n3. Remove entity\n\nAnswer: ";
-  std::cin >> input;
+  std::cout << "Choose option:\n0.Exit\n1. Get status\n2. Add new entity\n3. Remove entity\n\n";
+  input = readNumberInInterval("Answer: ", 0, 3);
   std::cout << std::endl;
   bzero(buffer, 512);
   while (input != 0) {
     switch(input) {
       case 1: // Get status
-        std::cout << "1. Sensor\n2. Device\n3. Room\n4. Home\n\nAnswer: ";
-        std::cin >> input;
+        std::cout << "Get status of:\n1. Sensor\n2. Device\n3. Room\n4. Home\n\n";
+        input = readNumberInInterval("Answer: ", 1, 4);
         std::cout << std::endl;
 
         // Write get status request
@@ -119,8 +160,8 @@ int main(int argc, char *argv[]) {
         printf("%s\n", buffer);
         break;
       case 2: // Add new entity
-        std::cout << "1. Sensor\n2. Device\n\nAnswer: ";
-        std::cin >> input;
+        std::cout << "Add new:\n1. Sensor\n2. Device\n\n";
+        input = readNumberInInterval("Answer: ", 1, 2);
         std::cout << std::endl;
 
         // Write add new entity request
@@ -156,10 +197,8 @@ int main(int argc, char *argv[]) {
           readAnswer(buffer, input2);
           writeData(sockfd, std::to_string(input2).c_str());
 
-          std::cout << "Sensor name: ";
-          std::cin >> inputStr;
-          std::cout << "Sensor value: ";
-          std::cin >> inputStr2;
+          inputStr = readStringName("Sensor name: ");
+          inputStr2 = std::to_string(readNumberInInterval("Sensor value: ", 0, input2 == 3 ? 50 : 100));
           std::cout << std::endl;
 
         } else {
@@ -170,10 +209,14 @@ int main(int argc, char *argv[]) {
           readAnswer(buffer, input2);
           writeData(sockfd, std::to_string(input2).c_str());
 
-          std::cout << "Device name: ";
-          std::cin >> inputStr;
+          inputStr = readStringName("Device name: ");
+
           std::cout << "Device state (on/ off): ";
-          std::cin >> inputStr2;
+          getline(std::cin, inputStr2);
+          while(inputStr2 != "on" && inputStr2 != "off") {
+            std::cout << "\nIncorrect input. Please write \"on\" or \"off\"\n\nDevice state (on/ off): ";
+            getline(std::cin, inputStr2);
+          }
           std::cout << std::endl;
         }
         // Write name
@@ -189,8 +232,8 @@ int main(int argc, char *argv[]) {
         printf("%s\n", buffer);
         break;
       case 3: // Remove entity
-        std::cout << "1. Sensor\n2. Device\n\nAnswer: ";
-        std::cin >> input;
+        std::cout << "Remove:\n1. Sensor\n2. Device\n\n";
+        input = readNumberInInterval("Answer: ", 1, 2);
         std::cout << std::endl;
 
         // Write remove entity request
@@ -231,8 +274,8 @@ int main(int argc, char *argv[]) {
         printf("%s\n", buffer);
         break;
     } 
-    std::cout << "0.Exit\n1. Get status\n2. Add new entity\n3. Remove entity\n\nAnswer: ";
-    std::cin >> input;
+    std::cout << "0.Exit\n1. Get status\n2. Add new entity\n3. Remove entity\n\n";
+    input = readNumberInInterval("Answer: ", 0, 3);
     std::cout << std::endl;
   }
   // Write end signal
