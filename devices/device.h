@@ -30,6 +30,9 @@ namespace smartHome{
         void setStatus(bool newStatus);
         void setSensors(const std::vector<Sensor*>& sensors);
 
+        void addSensor(Sensor* sensor);
+        void removeSensor(std::string sensorId);
+
     private:
         std::string type;
         const std::string deviceId;
