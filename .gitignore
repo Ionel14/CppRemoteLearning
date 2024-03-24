@@ -3,6 +3,10 @@
 
 # Build artifacts
 build/
+client/build
+client/cmake-build-debug
+server/build
+server/cmake-build-debug
 
 # Prerequisites
 *.d
