@@ -2,6 +2,15 @@ cmake_minimum_required(VERSION 3.10)
 project(nagarroRemoteLearningServer)
 
 set(CMAKE_CXX_STANDARD 17)
+set(Boost_INCLUDE_DIR /opt/local/include)
+set(Boost_LIBRARY_DIR /opt/local/lib)
+
+find_package(Boost 1.76.0 REQUIRED COMPONENTS serialization)
+
+if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+    link_directories(${Boost_LIBRARY_DIRS})
+endif()
 
 add_executable(
         nagarroRemoteLearningServer
@@ -30,6 +39,16 @@ add_executable(
         sensors/HumiditySensor.h
         sensors/MonoxidSensor.cc
         sensors/MonoxidSensor.h
-        server.cc
         utils/serverUtils.h
+        utils/serverUtils.cc
+        serialization/Message.h
+        server/Server.h
+        server/Server.cc
+        server/ClientHandler.cc
+        server/ClientHandler.h
+        main.cc
 )
+
+if(Boost_FOUND)
+    target_link_libraries(nagarroRemoteLearningServer ${Boost_LIBRARIES})
+endif()

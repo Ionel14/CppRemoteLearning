@@ -4,7 +4,7 @@
 
 namespace smart_home {
     House::House(int numRooms) {
-        if (numRooms > MAX_ROOMS) {
+        if (numRooms > ROOM_NUM) {
             std::cerr << "Error: Number of rooms exceeds maximum number of rooms.\n";
             return;
         }
@@ -14,7 +14,7 @@ namespace smart_home {
 
     void House::initializeRooms() {
         for (size_t i = 0; i < rooms.size(); ++i) {
-            auto type = static_cast<RoomType>(i % 3);
+            auto type = static_cast<RoomType>(i % ROOM_NUM);
             rooms[i] = Room(type);
         }
         for (auto& room : rooms) {
@@ -27,7 +27,7 @@ namespace smart_home {
         }
     }
     
-    std::array<Room, 3> House::getRooms() const {
+    std::array<Room, ROOM_NUM> House::getRooms() const {
         return rooms;
     }
 

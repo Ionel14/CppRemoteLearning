@@ -1,9 +1,25 @@
 #include <iostream>
 #include <cstring>
+#include <boost/date_time/gregorian/gregorian.hpp>
+#include <boost/archive/text_oarchive.hpp>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <netdb.h>
 #include "utils/clientUtils.h"
+#include "serialization/Message.h"
+#include <sstream>
+
+std::string getCurrentDate() {
+    boost::gregorian::date today = boost::gregorian::day_clock::local_day();
+    std::string dateString = boost::gregorian::to_iso_string(today);
+    return dateString;
+}
+
+std::string generateRandomName() {
+    std::string name = "Client";
+    name += std::to_string(rand() % 100);
+    return name;
+}
 
 int main() {
     int socketFileDescriptor = socket(AF_INET, SOCK_STREAM, 0);
@@ -11,6 +27,7 @@ int main() {
         std::cerr << "Error creating socket" << std::endl;
         return 1;
     }
+    const std::string name = generateRandomName();
 
     struct addrinfo hints{}, *serverInfo;
     memset(&hints, 0, sizeof(hints));
@@ -45,8 +62,13 @@ int main() {
         if (userInput == "exit") {
             break;
         }
-        userInput += '\0';
-        communicateWithServer(socketFileDescriptor, userInput);
+        std::stringstream ss;
+        boost::archive::text_oarchive oa(ss);
+        Message msg(userInput, name, getCurrentDate());
+        oa << msg;
+
+        std::string serializedMessage = ss.str();
+        communicateWithServer(socketFileDescriptor, serializedMessage);
     }
 
     freeaddrinfo(serverInfo);
@@ -54,3 +76,4 @@ int main() {
 
     return 0;
 }
+

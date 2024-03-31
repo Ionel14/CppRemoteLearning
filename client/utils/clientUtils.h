@@ -12,8 +12,6 @@ void communicateWithServer(int socketFileDescriptor, const std::string& message)
         std::cerr << "Error receiving data" << std::endl;
         return;
     }
-
-    buffer[bytesRead] = '\0';
     std::cout << "Received from server: " << buffer << std::endl;
 }
 
@@ -26,7 +24,6 @@ std::string receiveFromServer(int socketFileDescriptor) {
         return "";
     }
 
-    buffer[bytesRead] = '\0';
     return {buffer};
 }
 

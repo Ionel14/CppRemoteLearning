@@ -18,6 +18,7 @@ enum DeviceType {
     LIGHT,
     HEATER,
     AIR_CONDITIONER,
+    UNKNOWN_DEVICE,
 };
 
 enum SensorType {
@@ -26,6 +27,8 @@ enum SensorType {
     MONOXIDE,
     UNKNOWN_SENSOR,
 };
+
+const int ROOM_NUM = 3;
 
 static RoomType getRoomTypeFromInt(int roomType){
     switch (roomType) {

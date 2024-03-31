@@ -10,8 +10,6 @@
 #include "../devices/Device.h"
 #include "../marc_pop_unique_ptr/custom_unique_ptr.h"
 
-#define NUM_ROOMS_IN_HOUSE 3
-
 namespace smart_home {
     class User {
     public:
@@ -21,7 +19,7 @@ namespace smart_home {
         User& operator=(User&& other) = delete;
 
         static User& getInstance() {
-            static User instance(NUM_ROOMS_IN_HOUSE);
+            static User instance(ROOM_NUM);
             return instance;
         }
 

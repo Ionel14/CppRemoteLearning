@@ -17,12 +17,15 @@ namespace smart_home {
     }
 
     std::string Device::getDeviceStatus() const {
-        if (status == 1)
+        if (status == 1) {
             return "On";
-        else if (status == 0)
+        }
+        else if (status == 0) {
             return "Off";
-        else
+        }
+        else {
             return "ERROR";
+            }
     }
 
     void Device::setDeviceStatus(int status) {

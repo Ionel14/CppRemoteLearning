@@ -110,6 +110,8 @@ namespace smart_home {
             case DeviceType::AIR_CONDITIONER:
                 newDevice = std::make_unique<AirConditioner>();
                 break;
+            case UNKNOWN_DEVICE:
+                break;
         }
         devices.push_back(std::move(newDevice));
     }
@@ -236,9 +238,11 @@ namespace smart_home {
                 return sensor->displayStatus();
             }
         }
+        std::cerr << "Sensor not found." << std::endl;
+        return "Sensor not found.";
     }
 
     House User::getUserHouse() {
-        return House(3);
+        return House(ROOM_NUM);
     }
 }
