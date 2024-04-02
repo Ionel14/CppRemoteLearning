@@ -1,12 +1,19 @@
+#include "headers/message.h"
+
+#include <fstream>
 #include <iostream>
 #include <netinet/in.h>
 #include <netdb.h> 
+#include <random>
+#include <sstream>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
+
+using namespace smarthome;
 
 
 void error(const char* msg) {
@@ -21,8 +28,25 @@ void readData(int sockfd, char buffer[]) {
   }
 }
 
-void writeData(int sockfd, const char buffer[]) {
-  if (write(sockfd, buffer, strlen(buffer)) < 0) {
+std::ostringstream serializeData(std::string text, std::string name) {
+  std::time_t t = std::time(nullptr);
+  char date[11];
+  std::strftime(date, sizeof(date), "%F", std::localtime(&t));
+
+  const Message message(text, name, date);
+
+  std::ostringstream oss;
+  {
+    boost::archive::text_oarchive oa(oss);
+    oa << message;
+  }
+
+  return oss;
+}
+
+void writeData(int sockfd, const char buffer[], std::string name) {
+  std::ostringstream oss = serializeData(buffer, name);
+  if (write(sockfd, oss.str().c_str(), oss.str().length()) < 0) {
     error("Error writing to socket");
   }
 }
@@ -68,6 +92,9 @@ std::string readStringName(std::string message) {
 
 
 int main(int argc, char *argv[]) {
+  std::random_device rd;
+  std::string name = "client" + std::to_string(rd());
+
   int sockfd, portno;
   struct sockaddr_in serv_addr;
   struct hostent *server;
@@ -127,7 +154,7 @@ int main(int argc, char *argv[]) {
             strcpy(buffer, "status home");
             break;
         }
-        writeData(sockfd, buffer);
+        writeData(sockfd, buffer, name);
 
         if (input == 1 || input == 2 || input == 3) {
           // Read rooms
@@ -135,7 +162,7 @@ int main(int argc, char *argv[]) {
 
           // Write room index
           readAnswer(buffer, input2);
-          writeData(sockfd, std::to_string(input2).c_str());
+          writeData(sockfd, std::to_string(input2).c_str(), name);
 
           if (input == 1 || input == 2) {
             // Read devices
@@ -143,7 +170,7 @@ int main(int argc, char *argv[]) {
 
             // Write device index
             readAnswer(buffer, input2);
-            writeData(sockfd, std::to_string(input2).c_str());
+            writeData(sockfd, std::to_string(input2).c_str(), name);
 
             if(input == 1) {
               // Read sensors
@@ -151,7 +178,7 @@ int main(int argc, char *argv[]) {
 
               // Write sensor index
               readAnswer(buffer, input2);
-              writeData(sockfd, std::to_string(input2).c_str());
+              writeData(sockfd, std::to_string(input2).c_str(), name);
             }
           }
         }
@@ -173,14 +200,14 @@ int main(int argc, char *argv[]) {
             strcpy(buffer, "add device");
             break;
         }
-        writeData(sockfd, buffer);
+        writeData(sockfd, buffer, name);
 
         // Read rooms
         readData(sockfd, buffer);
 
         // Write room index
         readAnswer(buffer, input2);
-        writeData(sockfd, std::to_string(input2).c_str());
+        writeData(sockfd, std::to_string(input2).c_str(), name);
 
         if (input == 1) {
           // Read devices
@@ -188,14 +215,14 @@ int main(int argc, char *argv[]) {
 
           // Write device index
           readAnswer(buffer, input2);
-          writeData(sockfd, std::to_string(input2).c_str());
+          writeData(sockfd, std::to_string(input2).c_str(), name);
 
           // Read sensor types
           readData(sockfd, buffer);
 
           // Write sensor type
           readAnswer(buffer, input2);
-          writeData(sockfd, std::to_string(input2).c_str());
+          writeData(sockfd, std::to_string(input2).c_str(), name);
 
           inputStr = readStringName("Sensor name: ");
           inputStr2 = std::to_string(readNumberInInterval("Sensor value: ", 0, input2 == 3 ? 50 : 100));
@@ -207,7 +234,7 @@ int main(int argc, char *argv[]) {
 
           // Write device type
           readAnswer(buffer, input2);
-          writeData(sockfd, std::to_string(input2).c_str());
+          writeData(sockfd, std::to_string(input2).c_str(), name);
 
           inputStr = readStringName("Device name: ");
 
@@ -221,11 +248,11 @@ int main(int argc, char *argv[]) {
         }
         // Write name
         readData(sockfd, buffer);
-        writeData(sockfd, inputStr.c_str());
+        writeData(sockfd, inputStr.c_str(), name);
 
         // Write value/ state
         readData(sockfd, buffer);
-        writeData(sockfd, inputStr2.c_str());
+        writeData(sockfd, inputStr2.c_str(), name);
 
         // Read message
         readData(sockfd, buffer);
@@ -245,21 +272,21 @@ int main(int argc, char *argv[]) {
             strcpy(buffer, "remove device");
             break;
         }
-        writeData(sockfd, buffer);
+        writeData(sockfd, buffer, name);
 
         // Read rooms
         readData(sockfd, buffer);
 
         // Write room index
         readAnswer(buffer, input2);
-        writeData(sockfd, std::to_string(input2).c_str());
+        writeData(sockfd, std::to_string(input2).c_str(), name);
         
         // Read devices
         readData(sockfd, buffer);
 
         // Write device index
         readAnswer(buffer, input2);
-        writeData(sockfd, std::to_string(input2).c_str());
+        writeData(sockfd, std::to_string(input2).c_str(), name);
 
         if(input == 1) {
           // Read sensors
@@ -267,7 +294,7 @@ int main(int argc, char *argv[]) {
 
           // Write sensor index
           readAnswer(buffer, input2);
-          writeData(sockfd, std::to_string(input2).c_str());
+          writeData(sockfd, std::to_string(input2).c_str(), name);
         }
         // Read message
         readData(sockfd, buffer);
@@ -279,7 +306,7 @@ int main(int argc, char *argv[]) {
     std::cout << std::endl;
   }
   // Write end signal
-  writeData(sockfd, "0");
+  writeData(sockfd, "0", name);
   close(sockfd);
   return 0;
 }
