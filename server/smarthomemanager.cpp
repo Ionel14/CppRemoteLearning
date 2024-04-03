@@ -100,25 +100,51 @@ namespace smart_home
         smartHome_.GetDataFromXml( filename.c_str());
     }
 
-   bool SmartHomeManager::getReqFromClient(int *clientSocket)
+    Message& SmartHomeManager::getMessageFromReq(int *clientSocket) const
     {
-        char buffer[1024] = {0};
+        char buffer[2048] = {0};
         int bytesReceived = recv(*clientSocket, buffer, sizeof(buffer), 0);
         if (bytesReceived == 0)
         {
             std::cout<<"Client closed connection";
-            return false;
         }
         
         if (bytesReceived <= -1) {
             throw std::invalid_argument("Failed to receive data from server");
-            return false;
         }
 
-        std::string aux(buffer);
-        std::vector<std::string> requestParam = split(aux, "-");
+        Message* deserializedMessage = new Message;
+        {
+            std::istringstream ss(buffer);
+            if (!ss.good())
+            {
+                throw "the message is not ok";
+            }
+            
+            boost::archive::text_iarchive ia(ss);
+            ia >> *deserializedMessage;
+        }
 
-        aux.clear();
+        return *deserializedMessage;
+    }
+
+    bool SmartHomeManager::getReqFromClient(int *clientSocket)
+    {
+        Message deserializedMessage;
+        try
+        {
+            deserializedMessage = getMessageFromReq(clientSocket);
+        }
+        catch(const std::exception& e)
+        {
+            std::cout << e.what() << '\n';
+            return false;
+        }
+        
+        LogRequestsCredentialsInFile(deserializedMessage);
+        std::vector<std::string> requestParam = split(deserializedMessage.text_, "-");
+        std::string aux;
+        
         if (requestParam[0] == "Status")
         {
             if (requestParam[1] == "Sensor")
@@ -231,17 +257,25 @@ namespace smart_home
                 return;
             }
 
-            listen(*server_fd, 5);
-            std::cout << "Server listening on port " << 8080 << std::endl;
+            ThreadPool pool;
+            int* clientSocket;
+            while(true)
+            {
+                listen(*server_fd, 5);
+                std::cout << "Server listening on port " << 8080 << std::endl;
 
-            MyUniquePtr<int, SocketDeleter> clientSocket(new int(accept(*server_fd, nullptr, nullptr)));
+                clientSocket = (new int(accept(*server_fd, nullptr, nullptr)));
 
-            if (*clientSocket == -1) {
-                throw std::invalid_argument("Failed to accept connection");
-                return;
+                if (*clientSocket == -1) {
+                    close(*clientSocket);
+                    throw std::invalid_argument("Failed to accept connection");
+                }
+
+                pool.enqueue([this, clientSocket]{
+                    MyUniquePtr<int, SocketDeleter> client(clientSocket);   
+                    while (getReqFromClient(clientSocket));
+                });
             }
-
-            while (getReqFromClient(clientSocket.get()));
             
         }
         catch(const std::invalid_argument& e)
@@ -266,6 +300,12 @@ namespace smart_home
         tokens.push_back(input);
 
         return tokens;
+    }
+
+    void SmartHomeManager::LogRequestsCredentialsInFile(const Message& message)
+    {
+        std::ofstream logFile("../data_files/LogFile.txt", std::ios::app);
+        logFile << "Username:" << message.sender_ << "; Date:"<< message.date_ << "\n";
     }
 
 } // namespace smart_home
