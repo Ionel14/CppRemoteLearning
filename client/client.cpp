@@ -29,6 +29,10 @@ namespace smartHome{
             return;
         }
 
+        std::string clientName;
+        std::cout << "What's your name?\n";
+        std::getline(std::cin, clientName);
+
         // Sending requests to the server
         while (true) {
             // Print menu
@@ -40,6 +44,7 @@ namespace smartHome{
             std::cout << "6. Add-sensor\n";
             std::cout << "7. Delete-device\n";
             std::cout << "8. Delete-sensor\n";
+            std::cout << "9. Quit\n";
 
             // Get request
             std::string request;
@@ -48,13 +53,21 @@ namespace smartHome{
 
             if (request == "Status-room" || request == "Status-device" || request == "Status-sensor") {
                 std::string id;
-                std::cout << "Enter id: ";
+                std::cout << "\nEnter id: ";
                 std::getline(std::cin, id);
                 request += "-" + id;
             }
 
+            Message message(request, clientName);
+            
+            // Serialization for the Message Object
+            std::ostringstream oss;
+            boost::archive::text_oarchive archive(oss);
+            archive << message;
+            std::string serializedMessage = oss.str();
+
             // Send request
-            int bytesSent = send(clientSocket, request.c_str(), request.length(), 0);
+            int bytesSent = send(clientSocket, serializedMessage.c_str(), serializedMessage.length(), 0);
             if (bytesSent == -1) {
                 std::cerr << "Error: Failed to send request\n";
                 break;
@@ -72,9 +85,18 @@ namespace smartHome{
 
             if (request == "quit") {
                 std::cout << "Exiting...\n";
+                close(clientSocket);
                 break;
             }
         }
     }
 
+}
+
+int main()
+{
+    smartHome::Client client;
+    client.run();
+    return 0;
+    
 }

@@ -1,0 +1,19 @@
+LivingRoom R1
+Thermostat D1 1
+Temperature T1 25.0 1 , Temperature T2 15.0 0 ;
+;
+Bedroom R2
+VoiceControl D3 1
+Sound S1 70.0 1 , Sound S2 40.0 1 ;
+,
+Thermostat D4 1
+Temperature T1 25.0 1 ;
+;
+Kitchen R3
+VoiceControl D3 1
+Sound S1 70.0 1 , Sound S2 40.0 1 ;
+;
+Outside R4
+Security D2 0
+Motion M1 0.0 1 , Motion M2 1.0 1 ;
+;

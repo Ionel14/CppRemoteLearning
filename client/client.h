@@ -6,6 +6,7 @@
 #include <cstring>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include "message.h"
 
 namespace smartHome{
     class Client {

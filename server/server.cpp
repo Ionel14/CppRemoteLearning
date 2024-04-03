@@ -1,7 +1,7 @@
 #include "server.h"
 
 namespace smartHome{
-    Server::Server() : server_fd(new int(socket(AF_INET, SOCK_STREAM, 0))) {
+    Server::Server(size_t num_threads) : server_fd(new int(socket(AF_INET, SOCK_STREAM, 0))), threadpool(num_threads) {
         if (*server_fd == -1) {
             throw std::invalid_argument("Failed to create socket");
         }
@@ -28,14 +28,25 @@ namespace smartHome{
             SmartHome home1({}); 
             home1.readDataFromFile(filename);
 
-            MyUniquePtr<int, SocketDeleter> clientSocket(new int(accept(*server_fd, nullptr, nullptr)));
+            while (true) {
+                // Acceptarea unei noi conexiuni de la un client la fiecare iterație
+                std::shared_ptr<int> clientSocket(new int(accept(*server_fd, nullptr, nullptr)), SocketDeleter());
 
-            if (*clientSocket == -1) {
-                throw std::invalid_argument("Failed to accept connection");
+                if (*clientSocket == -1) {
+                    throw std::invalid_argument("Failed to accept connection");
+                }
+
+                // Fiecare client este procesat într-un fir de execuție din pool
+                threadpool.enqueue([this, clientSocket, &home1] {
+                    try {
+                        while(getReqFromClient(clientSocket.get(), home1)){
+
+                        }
+                    } catch(const std::invalid_argument& e) {
+                        std::cerr << e.what() << '\n';
+                    }
+                });
             }
-
-            while (getReqFromClient(clientSocket.get(), home1));
-
         } catch(const std::invalid_argument& e) {
             std::cerr << e.what() << '\n';
         }
@@ -79,8 +90,16 @@ namespace smartHome{
             return false;
         }
 
-        std::string aux(buffer);
-        std::vector<std::string> requestParam = split(aux, "-");
+        // Deserialization for the message received
+        std::string serializedMessage(buffer, bytesReceived);
+        std::istringstream iss(serializedMessage);
+        boost::archive::text_iarchive archive(iss);
+        Message message;
+        archive >> message;
+        std::vector<std::string> requestParam = split(message.getText(), "-");
+
+        std::ofstream file("logFile.txt", std::ios::app);
+
 
         if (requestParam[0] == "Status") {
             if (requestParam[1] == "sensor") {
@@ -96,6 +115,8 @@ namespace smartHome{
                 home.printStatus();
                 sendDataToClient("ok", clientSocket);
             }
+            file << message.getSenderName() << " " << message.getText() << " " << message.getCurrentDate() << ";\n";
+            return true;
         } else if (requestParam[0] == "Add") {
             UniquePtr<Sensor> sensor(new TemperatureSensor("T3", 25.0, true));
             if(requestParam[1] == "sensor"){
@@ -109,7 +130,8 @@ namespace smartHome{
                 room.addDevice(device.get());
                 sendDataToClient("ok", clientSocket);
             }
-            
+            file << message.getSenderName() << " " << message.getText() << " " << message.getCurrentDate() << ";\n";
+            return true;
         } else if (requestParam[0] == "Delete") {
             auto room = home.getRooms()[0];
             if(requestParam[1] == "sensor"){
@@ -121,8 +143,12 @@ namespace smartHome{
                 room.removeDevice("D6");
                 sendDataToClient("ok", clientSocket);
             }
+            file << message.getSenderName() << " " << message.getText() << " " << message.getCurrentDate() << ";\n";
+            return true;
         }
-        return true;
+        else if(requestParam[0] == "quit"){
+            std::cout << "Client closed connection...";
+        }
     }
 
 }

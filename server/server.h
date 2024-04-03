@@ -11,11 +11,13 @@
 #include "devices/device.h"
 #include "sensors/sensor.h"
 #include "colleagueuniqueptr.h"
+#include "message.h"
+#include "threadpool.h"
 
 namespace smartHome {
     class Server {
     public:
-        Server();
+        Server(size_t num_threads);
         ~Server();
 
         void start();
@@ -31,9 +33,14 @@ namespace smartHome {
         static std::vector<std::string> split(const std::string& input, const std::string& delimiter);
         static void sendDataToClient(const char *message, int *clientSocket);
         static bool getReqFromClient(int *clientSocket, SmartHome& home);
+        static void processClientRequest(MyUniquePtr<int, SocketDeleter>& clientSocket, SmartHome& home);
 
         MyUniquePtr<int, SocketDeleter> server_fd;
         sockaddr_in serverAddress;
+        MyThreadPool threadpool;
+
+        std::mutex socketMutex; 
+        std::mutex homeMutex;
     };
 }
 

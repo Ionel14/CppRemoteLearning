@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 project(SmartHomeProject)
 
 add_executable(
-    SmartHomeProject 
+    SmartHomeProject
     devices/device.cpp
     room.cpp 
     sensors/sensor.cpp 
@@ -14,5 +14,9 @@ add_executable(
     sensors/temperaturesensor.cpp 
     devices/thermostatdevice.cpp 
     devices/voicecontroldevice.cpp
-    server.cpp
-    client.cpp)
+    threadpool.cpp
+    message.cpp
+    server.cpp)
+
+find_package(Boost REQUIRED COMPONENTS serialization)
+target_link_libraries(SmartHomeProject Boost::serialization)

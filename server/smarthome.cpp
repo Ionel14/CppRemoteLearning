@@ -2,7 +2,7 @@
 #include "myuniqueptr.h"
 #include "colleagueuniqueptr.h"
 #include "server.h"
-#include "client.h"
+#include "threadpool.h"
 
 
 namespace smartHome{
@@ -255,19 +255,11 @@ namespace smartHome{
 }
 
 int main() {
+
     // Start the server in a separate thread
-    std::thread serverThread([](){
-        smartHome::Server server;
-        server.start();
-    });
-
-    // Start the client in the main thread
-    smartHome::Client client;
-    client.run();
-
-    // Wait for the server thread to finish
-    serverThread.join();
-
+    smartHome::Server server(5);
+    server.start();
+   
     return 0;
 }
 // int main(){

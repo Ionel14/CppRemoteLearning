@@ -1,5 +1,10 @@
 #Build directory
 build/
+*.cmake
+CMakeCache*
+Makefile
+SmartHome*
+CMakeFiles/
 
 # Prerequisites
 *.d
