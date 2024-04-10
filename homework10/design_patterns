@@ -1,0 +1,19 @@
+	1. Creational Design Patterns
+	
+- Factory method: Since there are different types of sensors and devices, it could be useful to have a factory for sensors and a factory for devices, each being able to make different types of entities of their own, making it easier to expand the smart home with new types of sensors and devices.
+
+
+	2. Structural Design Patterns
+	
+- Adapter: Since the app works with .txt files and reads the smart home's current state from and to a file, it could be useful to have an adaper that could convert the data to and from .xml, for example. This way we could use our data with other smart home management applications, could use 3rd party libraries for analytics or other useful features that wouldn't work with the application's specific .txt format or could start using this application with a different home whose data we got.
+
+- Decorator: Since the app has sensors and devices of different types, a decorator could be a useful way to specify the types of these. This way if new, more advanced sensors are added, which can for example measure both temperature and humidity, or if new devices are bought that can do multiple things, those could also be easily incorporated into the smart home.
+
+
+	3. Behavioral Design Patterns
+	
+- Iterator: Since the structure of the smart home is tree-like, traversing every sensor or every device isn't very straightforward. For sensors, for example, we would need to traverse every room's every device to get to them. So an iterator, which would easily allow us to check all sensors or devices could be helpful.
+
+- Memento: The application allows users to add or delete entities, but this also means that they could accidentally delete something that they didn't intend to. So allowing them to undo these actions by restoring the previous state of the smart home could be very useful.
+
+
