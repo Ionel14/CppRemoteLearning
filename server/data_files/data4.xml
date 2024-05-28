@@ -1,0 +1,14 @@
+<SmartHome>
+
+    <Room name="LivingRoom">
+        <LightSensor name="LightSensor" intensity="200"/>
+        <HumiditySensor name="HumSensor" humidity="10"/>
+        <TemperatureSensor name="TempSensor" temperature="20"/>
+        <PresenceSensor name="LightSensor" is_presence="true"/>
+        <Door name="KitchenDoor" status="On"/>
+        <AcUnit name="Cooler" status="On" mode="Cold"/>
+        <LightBulb name="Bulb1" status="On"> <!-- missing / -->
+    </Room>
+
+
+</SmartHome>
